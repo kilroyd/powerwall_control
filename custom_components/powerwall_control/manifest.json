@@ -1,0 +1,13 @@
+{
+  "domain": "powerwall_control",
+  "name": "Tesla Powerwall Control",
+  "codeowners": ["@kilroyd"],
+  "dependencies": [],
+  "documentation": "https://github.com/kilroyd/powerwall_control",
+  "integration_type": "device",
+  "iot_class": "cloud_polling",
+  "requirements": [],
+  "version": "0.1.0",
+  "config_flow": true,
+  "single_config_entry": true
+}

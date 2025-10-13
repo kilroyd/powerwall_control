@@ -1,0 +1,19 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Netzero",
+        "description": "Copy the API token and Energy System ID from the Developer API section of the Netzero App",
+        "data": {
+          "api_token": "API token",
+          "system_id": "Energy System ID"
+        }
+      }
+    },
+      "error": {
+          "invalid_token": "Invalid API Token",
+          "invalid_system_id": "Invalid Energy System ID",
+          "cannot_connect": "Can't connect to Netzero"
+      }
+  }
+}
