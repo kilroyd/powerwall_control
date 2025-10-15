@@ -1,5 +1,10 @@
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.const import Platform
+
+
+# List of platforms to support.
+PLATFORMS = [Platform.SWITCH]
 
 # Our ConfigEntry.runtime_data will hold PwCtrlData.
 # Otherwise access the config entries the the .data[] dictionary.
@@ -12,6 +17,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
     """
     # TODO: initialize class that will do the talking to Netzero?
     entry.runtime_data = PwCtrlData(hass, entry.data["api_token"], entry.data["system_id"])
+
+    # Creates a HA object for each platform required.
+    # This calls `async_setup_entry` function in each platform module.
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
 
