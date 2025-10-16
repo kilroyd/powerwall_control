@@ -4,7 +4,7 @@ from homeassistant.const import Platform
 
 
 # List of platforms to support.
-PLATFORMS = [Platform.NUMBER, Platform.SWITCH]
+PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
 
 # Our ConfigEntry.runtime_data will hold PwCtrlData.
 # Otherwise access the config entries the the .data[] dictionary.
