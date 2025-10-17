@@ -1,3 +1,12 @@
+"""Powerwall Control integration config flow.
+
+This is a Home Assistant defined file for defining the GUI driven
+configuration for an integration.
+
+Powerwall Control needs the user to provide an API token and an energy
+system ID which we can then use to talk to the Netzero servers.
+"""
+
 import re
 from typing import Any
 

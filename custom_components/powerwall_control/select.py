@@ -1,3 +1,13 @@
+"""Define Powerwall Control select entities.
+
+This is a Home Assistant defined file that specifies all select
+entities for an integration. A select entity can take one value from a
+discrete set of options.
+
+Powerwall Control defines a two select entities for selecting the
+operation mode, and the grid export mode.
+"""
+
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -18,9 +28,7 @@ class PwCtrlOperationalModeSelectEntity(SelectEntity):
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         self._attr_current_option = option
-
-
-#        self.async_write_ha_state()
+        # self.async_write_ha_state()
 
 
 class PwCtrlExportModeSelectEntity(SelectEntity):
@@ -36,9 +44,7 @@ class PwCtrlExportModeSelectEntity(SelectEntity):
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
         self._attr_current_option = option
-
-
-#        self.async_write_ha_state()
+        # self.async_write_ha_state()
 
 
 async def async_setup_entry(

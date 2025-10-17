@@ -1,3 +1,12 @@
+"""Define Powerwall Control switches.
+
+This is a Home Assistant defined file that specifies all switch
+entities for an integration. A switch can be on or off.
+
+Powerwall Control defines a single switch for selecting whether grid
+charging is enabled.
+"""
+
 from homeassistant.components.switch import SwitchDeviceClass, SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -6,11 +15,14 @@ from . import PwCtrlConfigEntry
 
 
 class PwCtrlGridChargingSwitch(SwitchEntity):
+    """Grid Charging switch entity class."""
+
     _attr_has_entity_name = True
     _attr_device_class = SwitchDeviceClass.SWITCH
     _attr_name = "Grid charging"
 
     def __init__(self):
+        """Initialize the switch entity."""
         self._is_on = False
         # self._attr_device_info = ...  # For automatic device registration
         # self._attr_unique_id = ...

@@ -1,3 +1,12 @@
+"""Define Powerwall Control number entities.
+
+This is a Home Assistant defined file that specifies all number
+entities for an integration. A number entity has a numerical value.
+
+Powerwall Control defines a single number entity for selecting the
+battery backup reserve value.
+"""
+
 from homeassistant.components.number import NumberDeviceClass, NumberEntity
 from homeassistant.const import PERCENTAGE, PRECISION_WHOLE
 from homeassistant.core import HomeAssistant
@@ -25,7 +34,7 @@ class PwCtrlBackupReserveNumberEntity(NumberEntity):
         """Set new value."""
         value = int(value)
         self._attr_native_value = value
-        #        self.async_write_ha_state()
+        # self.async_write_ha_state()
         self._attr_icon = icon_for_battery_level(self.native_value)
 
 

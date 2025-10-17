@@ -1,3 +1,24 @@
+"""Home Assistant Tesla Powerwall Control Integration.
+
+This integration allows you to reconfigure your Powerwall via the
+Netzero Developer API.
+
+* Set operational mode (autonomous or self supporting).
+
+* Set battery backup reserve.
+
+* Enable grid charging.
+
+* Set grid export mode (never, solar only, solar and battery).
+
+This integration is intended to work together with the Tesla Powerwall
+integration. The entities from that integration should be used to
+monitor the Powerwall state. This integration is only intended to make
+changes to the Powerwall configuration. The same changes can be made
+via the Tesla App, Tesla Fleet API, or alternative integrations like
+Teslemetry.
+"""
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
@@ -32,6 +53,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 # Temp location. Move to appropriate file when we figure out what we
 # want PwCtrlData to do. For now store the token and system id.
 class PwCtrlData:
+    """Central class to store runtime state.
+
+    This should eventually become a coordinator which talks to the
+    Netzero servers.
+    """
+
     def __init__(self, hass: HomeAssistant, api_token: str, system_id: str) -> None:
         """Init dummy hub."""
         self._hass = hass
