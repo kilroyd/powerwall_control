@@ -259,3 +259,8 @@ max-complexity = 25
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 property-decorators = ["propcache.api.cached_property"]
+
+[tool.ruff.lint.per-file-ignores]
+
+# Allow for powerwall.py script to write to stdout
+"powerwall.py" = ["T201"]
