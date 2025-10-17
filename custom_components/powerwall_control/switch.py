@@ -4,6 +4,7 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import PwCtrlConfigEntry
 
+
 class PwCtrlGridChargingSwitch(SwitchEntity):
     _attr_has_entity_name = True
     _attr_device_class = SwitchDeviceClass.SWITCH
@@ -11,8 +12,8 @@ class PwCtrlGridChargingSwitch(SwitchEntity):
 
     def __init__(self):
         self._is_on = False
-        #self._attr_device_info = ...  # For automatic device registration
-        #self._attr_unique_id = ...
+        # self._attr_device_info = ...  # For automatic device registration
+        # self._attr_unique_id = ...
 
     @property
     def is_on(self) -> bool:
@@ -28,10 +29,11 @@ class PwCtrlGridChargingSwitch(SwitchEntity):
         self._is_on = False
 
 
-async def async_setup_entry(hass: HomeAssistant,
-                            entry: PwCtrlConfigEntry,
-                            async_add_entities: AddConfigEntryEntitiesCallback,
-                            ) -> None:
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: PwCtrlConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
+) -> None:
     """Set up switch platform from a config entry."""
 
     entities: list[SwitchEntity] = []

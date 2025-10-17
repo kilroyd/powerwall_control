@@ -16,7 +16,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
     Set up Powerwall Control from a config entry .
     """
     # TODO: initialize class that will do the talking to Netzero?
-    entry.runtime_data = PwCtrlData(hass, entry.data["api_token"], entry.data["system_id"])
+    entry.runtime_data = PwCtrlData(
+        hass, entry.data["api_token"], entry.data["system_id"]
+    )
 
     # Creates a HA object for each platform required.
     # This calls `async_setup_entry` function in each platform module.
@@ -35,7 +37,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 # Temp location. Move to appropriate file when we figure out what we
 # want PwCtrlData to do. For now store the token and system id.
 class PwCtrlData:
-    def __init__(self, hass: HomeAssistant, api_token:str, system_id: str) -> None:
+    def __init__(self, hass: HomeAssistant, api_token: str, system_id: str) -> None:
         """Init dummy hub."""
         self._hass = hass
         self._api_token = api_token

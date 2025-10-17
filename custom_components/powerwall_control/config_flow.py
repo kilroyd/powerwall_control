@@ -7,10 +7,12 @@ from homeassistant import config_entries, exceptions
 from .const import DOMAIN
 
 # Specify items in the order they are to be displayed in the UI
-DATA_SCHEMA = vol.Schema({
-    vol.Required("api_token"): str,
-    vol.Required("system_id"): str,
-})
+DATA_SCHEMA = vol.Schema(
+    {
+        vol.Required("api_token"): str,
+        vol.Required("system_id"): str,
+    }
+)
 
 # Regular expressions to validate user input
 API_TOKEN_RE = re.compile(r"[0-9A-z]{40,}$")
@@ -36,12 +38,13 @@ def validate_input(data: dict) -> dict[str, Any]:
 
 class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Powerwall Control config flow."""
+
     # The schema version of the entries that it creates
     # Home Assistant will call your migrate method if the version changes
     VERSION = 1
     MINOR_VERSION = 1
 
-    async def async_step_user(self, user_input: dict[str, Any]|None = None):
+    async def async_step_user(self, user_input: dict[str, Any] | None = None):
         """Handle a flow initiated by the user."""
         errors = {}
         if user_input is not None:
@@ -58,7 +61,9 @@ class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         # Either initial call or validation failed.
         # Show the form
-        return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
+        return self.async_show_form(
+            step_id="user", data_schema=DATA_SCHEMA, errors=errors
+        )
 
 
 class InvalidToken(exceptions.HomeAssistantError):

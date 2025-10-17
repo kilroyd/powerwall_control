@@ -16,22 +16,24 @@ class PwCtrlBackupReserveNumberEntity(NumberEntity):
     _attr_device_class = NumberDeviceClass.BATTERY
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_name = "Backup reserve"
-    
+
     def __init__(self):
         """Initialize the number entity."""
         self._attr_native_value = 100
-        
+
     async def async_set_native_value(self, value: float) -> None:
         """Set new value."""
         value = int(value)
         self._attr_native_value = value
-#        self.async_write_ha_state()
+        #        self.async_write_ha_state()
         self._attr_icon = icon_for_battery_level(self.native_value)
 
-        
-async def async_setup_entry(hass: HomeAssistant,
-                            entry: PwCtrlConfigEntry,
-                            async_add_entities: AddConfigEntryEntitiesCallback) -> None:
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: PwCtrlConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
+) -> None:
     """Set up number platform from a config entry."""
     entities: list[NumberEntity] = []
     entities.append(PwCtrlBackupReserveNumberEntity())
