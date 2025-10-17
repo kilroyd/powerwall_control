@@ -1,4 +1,4 @@
-from homeassistant.components.number import NumberEntity, NumberDeviceClass
+from homeassistant.components.number import NumberDeviceClass, NumberEntity
 from homeassistant.const import PERCENTAGE, PRECISION_WHOLE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback

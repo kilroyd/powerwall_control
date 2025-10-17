@@ -1,7 +1,6 @@
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 from homeassistant.const import Platform
-
+from homeassistant.core import HomeAssistant
 
 # List of platforms to support.
 PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
@@ -12,9 +11,7 @@ type PwCtrlConfigEntry = ConfigEntry[PwCtrlData]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bool:
-    """
-    Set up Powerwall Control from a config entry .
-    """
+    """Set up Powerwall Control from a config entry."""
     # TODO: initialize class that will do the talking to Netzero?
     entry.runtime_data = PwCtrlData(
         hass, entry.data["api_token"], entry.data["system_id"]
@@ -28,9 +25,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """
-    Unload a config entry.
-    """
+    """Unload a config entry."""
     return True
 
 

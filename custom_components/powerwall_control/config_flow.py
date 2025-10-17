@@ -1,9 +1,10 @@
 import re
-import voluptuous as vol
-
 from typing import Any
 
+import voluptuous as vol
+
 from homeassistant import config_entries, exceptions
+
 from .const import DOMAIN
 
 # Specify items in the order they are to be displayed in the UI
