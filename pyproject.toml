@@ -5,8 +5,9 @@ description = "Home Assistant Powerwall Control Integration"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "aiohttp>=3.13.1",
+    "asyncio>=4.0.0",
     "pre-commit>=4.3.0",
-    "requests>=2.32.5",
     "ruff>=0.14.1",
 ]
 

@@ -14,25 +14,14 @@ The JSON file for --system-json should look like:
 """
 
 import argparse
+import asyncio
 import json
 import pathlib
 import sys
 
-import requests
+import aiohttp
 
-API_URL = "https://api.netzero.energy/api/v1"
-
-
-def print_http_request(req):
-    """Nicely output an HTTP request with headers."""
-    print(
-        "{}\n{}\r\n{}\r\n\r\n{}".format(
-            "-----------START-----------",
-            req.method + " " + req.url,
-            "\r\n".join(f"{k}: {v}" for k, v in req.headers.items()),
-            req.body,
-        )
-    )
+import netzero
 
 
 def parse_args():
@@ -99,52 +88,55 @@ def parse_args():
     return args
 
 
-def main():
+async def main():
     """Main script entry point."""
     args = parse_args()
-    url = f"{API_URL}/{args.system_id}/config"
-    headers = {
-        "Authorization": f"Bearer {args.api_token}",
-        "Content-Type": "application/json",
-    }
-    response = None
-    request = {}
-
+    request = ""
+    operational_mode = None
+    export_mode = None
     if args.set_backup:
-        print(f" Backup reserve {args.set_backup}")
-        request["backup_reserve_percent"] = args.set_backup
+        request += f" Backup reserve {args.set_backup}\n"
 
     if args.set_mode:
-        print(f" Operational mode {args.set_mode}")
-        request["operational_mode"] = (
-            "autonomous" if args.set_mode == "tbc" else "self_consumption"
-        )
+        request += f" Operational mode {args.set_mode}\n"
+        if args.set_mode == "tbc":
+            operational_mode = netzero.OperationalMode.AUTONOMOUS
+        else:
+            operational_mode = netzero.OperationalMode.SELF_CONSUMPTION
 
     if args.grid_charging is not None:
-        print(f" Grid charging allowed {args.grid_charging}")
-        request["grid_charging"] = bool(args.grid_charging)
+        request += f" Grid charging allowed {args.grid_charging}\n"
 
     if args.export is not None:
-        print(f" Energy export mode {args.export}")
+        request += f" Energy export mode {args.export}\n"
         if args.export == "battery":
-            export_mode = "battery_ok"
+            export_mode = netzero.GridExportMode.BATTERY_OK
+        elif args.export == "pv_only":
+            export_mode = netzero.GridExportMode.PV_ONLY
         else:
-            export_mode = args.export
-        request["energy_exports"] = export_mode
+            export_mode = netzero.GridExportMode.NEVER
 
-    if request:
-        print("Changing Powerwall state")
+    async with aiohttp.ClientSession() as session:
+        auth = netzero.Auth(session, args.api_token)
+        site = netzero.EnergySiteConfig(auth, args.system_id)
 
-        json_request = json.dumps(request, indent=4)
-        response = requests.post(url, headers=headers, data=json_request)
-    else:
-        print("Reading Powerwall state:")
-        response = requests.get(url, headers=headers)
+        if request:
+            print(f"Changing Powerwall state\n{request}")
+            await site.async_control(
+                backup_reserve=args.set_backup,
+                grid_charging_enabled=args.grid_charging,
+                grid_export_mode=export_mode,
+                operational_mode=operational_mode,
+            )
 
-    print(json.dumps(response.json(), indent=4))
+        else:
+            print("Reading Powerwall state:")
+            await site.async_update()
+
+        print(json.dumps(site.raw_data, indent=4))
 
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(asyncio.run(main()))
