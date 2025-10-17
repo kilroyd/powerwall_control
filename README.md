@@ -16,6 +16,22 @@ The benefit of this setup is that you just need an API Token and
 System ID from Netzero - there's no need to configure publicly
 available credentials.
 
+# Installing
+
+This integration is at an early stage of development. There are no
+releases, so you have to install from source. HACS is not aware of
+this integration yet.
+
+Checkout the repository from Github.
+
+    git checkout https://github.com/kilroyd/powerwall_control
+
+Copy the subdirectory custom_components/powerwall_control to your Home
+Assistant server's <config>/custom_components directory.
+
+    cp -r powerwall_control/custom_components/powerwall_control \
+          $HOME_ASSIST_CONFIG_DIR/custom_components/.
+
 # Setup
 
 * Download the Netzero App onto your phone from the Apple store or the
@@ -24,11 +40,23 @@ available credentials.
 * Sign into the Netzero App with your Tesla username and password.
 
 * Separately sign into your Tesla account (not in the Tesla App), and
-  approve access for the Netzero App. They will appear under the
-  Manage Access page as a third party.
+  approve access for the Netzero App. Netzero will appear under the
+  Manage Access page of the app as a third party.
 
 * The free Netzero Basic subscription is sufficient.
 
 * In the Netzero App, go to Settings->Developer API.
 
 * Take a note of the API Token and System ID.
+
+* In Home Assistant navigate to the Settings->Devices and Services
+  tab.
+
+* Select "Add integration".
+
+* Search for "Tesla Powerwall Control", and select it.
+
+* Paste the API Token and System ID into the relevant text boxes and
+  press Submit.
+
+At this point you should see that a device has been added with 4 entities.
