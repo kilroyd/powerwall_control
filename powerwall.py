@@ -103,7 +103,10 @@ def main():
     """Main script entry point."""
     args = parse_args()
     url = f"{API_URL}/{args.system_id}/config"
-    headers = {"Authorization": f"Bearer {args.api_token}"}
+    headers = {
+        "Authorization": f"Bearer {args.api_token}",
+        "Content-Type": "application/json",
+    }
     response = None
     request = {}
 
