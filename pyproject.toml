@@ -1,0 +1,11 @@
+[project]
+name = "powerwall_control"
+version = "0.1.0"
+description = "Home Assistant Powerwall Control Integration"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pre-commit>=4.3.0",
+    "requests>=2.32.5",
+    "ruff>=0.14.1",
+]
