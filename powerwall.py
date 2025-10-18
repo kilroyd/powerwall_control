@@ -51,9 +51,9 @@ def parse_args():
     parser.add_argument(
         "--set-mode",
         "-m",
-        choices=["ss", "tbc"],
+        choices=["auto", "self"],
         default=None,
-        help="Set operational mode (self sufficiency or time based control)",
+        help="Set operational mode (autonomous or self sufficiency)",
     )
     parser.add_argument(
         "--grid-charging",
@@ -65,7 +65,7 @@ def parse_args():
     parser.add_argument(
         "--export",
         "-x",
-        choices=["never", "pv_only", "battery"],
+        choices=["never", "pv", "both"],
         default=None,
         help="Energy export mode",
     )
@@ -99,7 +99,7 @@ async def main():
 
     if args.set_mode:
         request += f" Operational mode {args.set_mode}\n"
-        if args.set_mode == "tbc":
+        if args.set_mode == "auto":
             operational_mode = netzero.OperationalMode.AUTONOMOUS
         else:
             operational_mode = netzero.OperationalMode.SELF_CONSUMPTION
@@ -109,9 +109,9 @@ async def main():
 
     if args.export is not None:
         request += f" Energy export mode {args.export}\n"
-        if args.export == "battery":
+        if args.export == "both":
             export_mode = netzero.GridExportMode.BATTERY_OK
-        elif args.export == "pv_only":
+        elif args.export == "pv":
             export_mode = netzero.GridExportMode.PV_ONLY
         else:
             export_mode = netzero.GridExportMode.NEVER
