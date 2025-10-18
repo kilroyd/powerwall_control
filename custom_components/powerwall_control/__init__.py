@@ -22,6 +22,7 @@ Teslemetry.
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.typing import ConfigType
 
 # List of platforms to support.
 PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
@@ -29,6 +30,11 @@ PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
 # Our ConfigEntry.runtime_data will hold PwCtrlData.
 # Otherwise access the config entries the the .data[] dictionary.
 type PwCtrlConfigEntry = ConfigEntry[PwCtrlData]
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Called by Home Assistant when loading the integration."""
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bool:
