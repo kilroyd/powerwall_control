@@ -207,10 +207,10 @@ class EnergySiteConfig:
         The response includes the updated state of the energy site.
 
         Accepted kwargs parameters are
-        backup_reserve_percent
-        grid_charging
-        energy_exports
-        operational_mode
+        backup_reserve_percent (int)
+        grid_charging (bool)
+        energy_exports (EnergyExportMode)
+        operational_mode (OperationalMode)
         """
         json = {}
         value = kwargs.get("backup_reserve_percent")
