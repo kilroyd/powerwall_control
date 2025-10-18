@@ -13,8 +13,8 @@ class OperationalMode(StrEnum):
     SELF_CONSUMPTION = "self_consumption"
 
 
-class GridExportMode(StrEnum):
-    """States that may be used by grid export mode."""
+class EnergyExportMode(StrEnum):
+    """States that may be used by energy export mode."""
 
     NEVER = "never"
     PV_ONLY = "pv_only"
@@ -59,7 +59,7 @@ class EnergySiteConfig:
         return float(self.raw_data["percentage_charged"])
 
     @property
-    def backup_reserve(self) -> int:
+    def backup_reserve_percent(self) -> int:
         """Return the backup reserve as a percentage."""
         return self.raw_data["backup_reserve_percent"]
 
@@ -72,15 +72,15 @@ class EnergySiteConfig:
         return OperationalMode(self.raw_data["operational_mode"])
 
     @property
-    def grid_export_mode(self) -> GridExportMode:
+    def energy_exports(self) -> EnergyExportMode:
         """Return the grid export mode of the site.
 
         This may be one of never, pv_only, or battery_pl.
         """
-        return GridExportMode(self.raw_data["energy_exports"])
+        return EnergyExportMode(self.raw_data["energy_exports"])
 
     @property
-    def grid_charging_enabled(self) -> bool:
+    def grid_charging(self) -> bool:
         """Return whether grid charging is enabled."""
         return self.raw_data["grid_charging"]
 
@@ -91,19 +91,19 @@ class EnergySiteConfig:
         The response includes the updated state of the energy site.
 
         Accepted kwargs parameters are
-        backup_reserve
-        grid_charging_enabled
-        grid_export_mode
+        backup_reserve_percent
+        grid_charging
+        energy_exports
         operational_mode
         """
         json = {}
-        value = kwargs.get("backup_reserve")
+        value = kwargs.get("backup_reserve_percent")
         if value is not None:
             json["backup_reserve_percent"] = value
-        value = kwargs.get("grid_charging_enabled")
+        value = kwargs.get("grid_charging")
         if value is not None:
             json["grid_charging"] = value
-        value = kwargs.get("grid_export_mode")
+        value = kwargs.get("energy_exports")
         if value is not None:
             json["energy_exports"] = str(value)
         value = kwargs.get("operational_mode")

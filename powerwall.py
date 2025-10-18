@@ -110,11 +110,11 @@ async def main():
     if args.export is not None:
         request += f" Energy export mode {args.export}\n"
         if args.export == "both":
-            export_mode = netzero.GridExportMode.BATTERY_OK
+            export_mode = netzero.EnergyExportMode.BATTERY_OK
         elif args.export == "pv":
-            export_mode = netzero.GridExportMode.PV_ONLY
+            export_mode = netzero.EnergyExportMode.PV_ONLY
         else:
-            export_mode = netzero.GridExportMode.NEVER
+            export_mode = netzero.EnergyExportMode.NEVER
 
     async with aiohttp.ClientSession() as session:
         auth = netzero.Auth(session, args.api_token)
@@ -123,9 +123,9 @@ async def main():
         if request:
             print(f"Changing Powerwall state\n{request}")
             await site.async_control(
-                backup_reserve=args.set_backup,
-                grid_charging_enabled=args.grid_charging,
-                grid_export_mode=export_mode,
+                backup_reserve_percent=args.set_backup,
+                grid_charging=args.grid_charging,
+                energy_exports=export_mode,
                 operational_mode=operational_mode,
             )
 
