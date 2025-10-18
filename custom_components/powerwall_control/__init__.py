@@ -28,7 +28,7 @@ from homeassistant.helpers.typing import ConfigType
 PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
 
 # Our ConfigEntry.runtime_data will hold PwCtrlData.
-# Otherwise access the config entries the the .data[] dictionary.
+# Otherwise access the config entries via the .data[] dictionary.
 type PwCtrlConfigEntry = ConfigEntry[PwCtrlData]
 
 
@@ -38,7 +38,10 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bool:
-    """Set up Powerwall Control from a config entry."""
+    """Set up Powerwall Control from a config entry.
+
+    The config entry is created by the Home Assistant config flow.
+    """
     # TODO: initialize class that will do the talking to Netzero?
     entry.runtime_data = PwCtrlData(
         hass, entry.data["api_token"], entry.data["system_id"]
@@ -65,8 +68,8 @@ class PwCtrlData:
     Netzero servers.
     """
 
-    def __init__(self, hass: HomeAssistant, api_token: str, system_id: str) -> None:
-        """Init dummy hub."""
+    def __init__(self, hass: HomeAssistant, api_token: str, system_id: str):
+        """Store token and system id to pass to netzero later."""
         self._hass = hass
         self._api_token = api_token
         self._system_id = system_id
