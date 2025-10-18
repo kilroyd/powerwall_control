@@ -12,6 +12,7 @@ repos:
     -   id: check-illegal-windows-names
     -   id: check-merge-conflict
     -   id: check-shebang-scripts-are-executable
+    -   id: check-symlinks
     -   id: check-toml
     -   id: detect-private-key
     -   id: end-of-file-fixer
