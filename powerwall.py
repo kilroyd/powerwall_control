@@ -32,8 +32,18 @@ def parse_args():
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
-    parser.add_argument("--api-token", "-a", default=None, help="API token to use")
-    parser.add_argument("--system-id", "-s", default=None, help="System to control")
+    parser.add_argument(
+        "--api-token",
+        "-a",
+        default=None,
+        help="API token to use. Overrides system_json if both specified.",
+    )
+    parser.add_argument(
+        "--system-id",
+        "-s",
+        default=None,
+        help="System to control. Overrides system_json if both specified.",
+    )
     parser.add_argument(
         "system_json",
         nargs="?",
