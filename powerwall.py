@@ -6,7 +6,7 @@ Netzero app. Use of the Developer API on Netzero is currently free.
 
 The Developer API is documented at https://docs.netzero.energy/docs/tesla/API
 
-The JSON file for --system-json should look like:
+The JSON file for the system_json positional argument should look like:
     {
         "api_token": "abcedf",
         "system_id": "12345"
@@ -35,8 +35,8 @@ def parse_args():
     parser.add_argument("--api-token", "-a", default=None, help="API token to use")
     parser.add_argument("--system-id", "-s", default=None, help="System to control")
     parser.add_argument(
-        "--system-json",
-        "-j",
+        "system_json",
+        nargs="?",
         default=None,
         help="JSON file containing API token and System ID",
     )
