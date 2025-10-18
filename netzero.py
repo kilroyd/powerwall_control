@@ -154,7 +154,17 @@ class EnergySiteConfig:
     """Class that represents an energy site's configuration."""
 
     def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}):
-        """Initialize a config object."""
+        """Initialize a config object.
+
+        If initialized with default raw_data, then the property calls
+        will fail. The only reason this is supported is to allow an
+        EnergySiteConfig to be instantiated, and then call
+        async_update or async_control on it. After this, property
+        usage will behave normally. This also allows the site
+        configuration to be set without having to get the current
+        configuration first.
+
+        """
         self.auth = auth
         self.id = id
         self.raw_data = raw_data
