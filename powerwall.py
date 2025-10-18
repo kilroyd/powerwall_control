@@ -128,11 +128,11 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         auth = netzero.Auth(session, args.api_token)
-        site = netzero.EnergySiteConfig(auth, args.system_id)
+        config = netzero.EnergySiteConfig(auth, args.system_id)
 
         if request:
-            print(f"Changing Powerwall state\n{request}")
-            await site.async_control(
+            print(f"Changing Powerwall state...\n{request}")
+            await config.async_control(
                 backup_reserve_percent=args.set_backup,
                 grid_charging=args.grid_charging,
                 energy_exports=export_mode,
@@ -140,10 +140,26 @@ async def main():
             )
 
         else:
-            print("Reading Powerwall state:")
-            await site.async_update()
+            print("Reading Powerwall state...")
+            await config.async_update()
 
-        print(json.dumps(site.raw_data, indent=4))
+        print(f"""Configuration:
+  Battery backup reserve: {config.backup_reserve_percent}%
+  Operational mode:       {config.operational_mode}
+  Grid export mode:       {config.energy_exports}
+  Grid charging emabled:  {config.grid_charging}""")
+        status = config.live_status
+        print(f"""Live status:
+  Battery percentage charged: {status.percentage_charged:.1f}%
+  Solar power:                {status.solar_power}W
+  Battery power:              {status.battery_power}W
+  Site load:                  {status.load_power}W
+  Grid power usage:           {status.grid_power}W
+  Generator power:            {status.generator_power}W
+  Grid status:                {status.grid_status}
+  Island status:              {status.island_status}
+  Storm mode:                 {"Active" if status.storm_mode_active else "Inactive"}
+  Timestamp:                  {status.timestamp}""")
 
     return 0
 
