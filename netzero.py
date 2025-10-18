@@ -1,5 +1,6 @@
 """API library for access to Netzero Developer API."""
 
+from datetime import datetime
 from enum import StrEnum
 from typing import Any
 
@@ -19,6 +20,20 @@ class EnergyExportMode(StrEnum):
     NEVER = "never"
     PV_ONLY = "pv_only"
     BATTERY_OK = "battery_ok"
+
+
+class GridStatus(StrEnum):
+    """States that may be used by grid status."""
+
+    ACTIVE = "Active"
+    INACTIVE = "Inactive"
+
+
+class IslandStatus(StrEnum):
+    """States that may be used by island status."""
+
+    ON_GRID = "on_grid"
+    OFF_GRID = "off_grid"
 
 
 class Auth:
@@ -44,6 +59,97 @@ class Auth:
         )
 
 
+class EnergySiteStatus:
+    """Class that represents an energy site's current status."""
+
+    def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}):
+        """Initialize a config object."""
+        self.auth = auth
+        self.id = id
+        self.raw_data = raw_data
+
+    @property
+    def percentage_charged(self) -> float:
+        """Percentage charge of the batteries at the energy site."""
+        return float(self.raw_data["percentage_charged"])
+
+    @property
+    def solar_power(self) -> int:
+        """Current solar power generation in W."""
+        return self.raw_data["solar_power"]
+
+    @property
+    def battery_power(self) -> int:
+        """Current battery power output in W.
+
+        While charging, this value will be negative.
+        """
+        return self.raw_data["battery_power"]
+
+    @property
+    def load_power(self) -> int:
+        """Current site load in W.
+
+        Energy consumption of the site, ignoring any local power generation
+        and battery usage (for power or storage).
+        """
+        return self.raw_data["load_power"]
+
+    @property
+    def grid_power(self) -> int:
+        """Current grid power usage in W.
+
+        Positive when importing energy from the grid, and negative
+        when exporting energy to the grid.
+        """
+        return self.raw_data["grid_power"]
+
+    @property
+    def generator_power(self) -> int:
+        """Current generator power in W.
+
+        Power from other energy generation sources.
+        """
+        return self.raw_data["generator_power"]
+
+    @property
+    def grid_status(self) -> GridStatus:
+        """Current grid status.
+
+        Either active or inactive.
+        """
+        return GridStatus(self.raw_data["grid_status"])
+
+    @property
+    def island_status(self) -> IslandStatus:
+        """Current island status.
+
+        Either on grid or off grid.
+        """
+        return IslandStatus(self.raw_data["island_status"])
+
+    @property
+    def storm_mode_active(self) -> bool:
+        """Whether storm mode is currently active."""
+        return self.raw_data["storm_mode_active"]
+
+    @property
+    def timestamp(self) -> str:
+        """Time associated with current site readings."""
+        return datetime.fromisoformat(self.raw_data["timestamp"])
+
+    # TODO: support for wall connectors
+
+    async def async_update(self):
+        """Update the energy site status.
+
+        Note that this retreives the full configuration.
+        """
+        resp = await self.auth.request("get", f"{self.id}/config")
+        resp.raise_for_status()
+        self.raw_data = await resp.json()["live_status"]
+
+
 class EnergySiteConfig:
     """Class that represents an energy site's configuration."""
 
@@ -54,18 +160,13 @@ class EnergySiteConfig:
         self.raw_data = raw_data
 
     @property
-    def battery_charge(self) -> float:
-        """Percentage charge of the batteries at the energy site."""
-        return float(self.raw_data["percentage_charged"])
-
-    @property
     def backup_reserve_percent(self) -> int:
-        """Return the backup reserve as a percentage."""
+        """The backup reserve as a percentage."""
         return self.raw_data["backup_reserve_percent"]
 
     @property
     def operational_mode(self) -> OperationalMode:
-        """Return the operational mode of the site.
+        """The operational mode of the site.
 
         This may be either autonomous or self_supported.
         """
@@ -73,16 +174,21 @@ class EnergySiteConfig:
 
     @property
     def energy_exports(self) -> EnergyExportMode:
-        """Return the grid export mode of the site.
+        """The grid export mode of the site.
 
-        This may be one of never, pv_only, or battery_pl.
+        This may be one of never, pv_only, or battery_ok.
         """
         return EnergyExportMode(self.raw_data["energy_exports"])
 
     @property
     def grid_charging(self) -> bool:
-        """Return whether grid charging is enabled."""
+        """Whether grid charging is enabled."""
         return self.raw_data["grid_charging"]
+
+    @property
+    def live_status(self) -> EnergySiteStatus:
+        """A class from which live status of the site can be queried."""
+        return EnergySiteStatus(self.auth, self.id, self.raw_data["live_status"])
 
     async def async_control(self, **kwargs):
         """Reconfigure the energy site with new parameters.
