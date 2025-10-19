@@ -1,6 +1,7 @@
 """Data update coordinator."""
 
 from datetime import timedelta
+from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.debounce import Debouncer
@@ -18,7 +19,7 @@ REQUEST_CONTROL_DEFAULT_COOLDOWN = 15
 REQUEST_CONTROL_DEFAULT_IMMEDIATE = False
 
 
-class PwCtrlCoordinator(DataUpdateCoordinator):
+class PwCtrlCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Class used to manage data collection.
 
     The Netzero API returns the status of multiple entities in a
@@ -57,12 +58,13 @@ class PwCtrlCoordinator(DataUpdateCoordinator):
             function=self._async_control,
         )
 
-    async def _async_update_data(self) -> None:
+    async def _async_update_data(self) -> dict[str, Any]:
         """Refresh data."""
         # ClientErrors are caught by DataUpdateCoordinator.  Netzero
         # isn't raising any more specific errors, so just allow the
         # default handling to take care of it.
         await self.config.async_update()
+        return {}
 
     async def async_request_control(self, **kwargs) -> None:
         """Pass requests for control to netzero.
@@ -81,4 +83,4 @@ class PwCtrlCoordinator(DataUpdateCoordinator):
         self._reconfig_dict.clear()
 
         # Update listeners with any new values
-        await self.async_set_updated_data(None)
+        self.async_set_updated_data({})
