@@ -9,6 +9,7 @@ charging is enabled.
 
 from homeassistant.components.switch import SwitchDeviceClass, SwitchEntity
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -23,8 +24,9 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
     _attr_device_class = SwitchDeviceClass.SWITCH
     _attr_name = "Grid charging"
 
-    def __init__(self, coordinator: PwCtrlCoordinator):
+    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
         """Initialize the switch entity."""
+        self._attr_device_info = device_info
         super().__init__(coordinator)
 
         # Need an initial value
@@ -61,6 +63,10 @@ async def async_setup_entry(
 
     entities: list[SwitchEntity] = []
 
-    entities.append(PwCtrlGridChargingSwitch(entry.runtime_data.coordinator))
+    entities.append(
+        PwCtrlGridChargingSwitch(
+            entry.runtime_data.coordinator, entry.runtime_data.device_info
+        )
+    )
 
     async_add_entities(entities)

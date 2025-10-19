@@ -23,8 +23,10 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.typing import ConfigType
 
+from .const import DOMAIN
 from .coordinator import PwCtrlCoordinator
 
 # Temporarily use netzero directly to test in place within HA
@@ -48,6 +50,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
 
     The config entry is created by the Home Assistant config flow.
     """
+    device_info = DeviceInfo(
+        identifiers={(DOMAIN, entry.data["system_id"])},
+        manufacturer="Tesla",
+        name="Powerwall",
+    )
     session = async_get_clientsession(hass)
     # Create API connection
     auth = Auth(session, entry.data["api_token"])
@@ -56,7 +63,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
 
     coordinator = PwCtrlCoordinator(hass, config)
 
-    entry.runtime_data = PwCtrlData(hass, site, coordinator)
+    entry.runtime_data = PwCtrlData(hass, site, coordinator, device_info)
 
     # Creates a HA object for each platform required.
     # This calls `async_setup_entry` function in each platform module.
@@ -84,9 +91,14 @@ class PwCtrlData:
     """
 
     def __init__(
-        self, hass: HomeAssistant, site: EnergySite, coordinator: PwCtrlCoordinator
+        self,
+        hass: HomeAssistant,
+        site: EnergySite,
+        coordinator: PwCtrlCoordinator,
+        device_info: DeviceInfo,
     ):
         """Store hass and site."""
         self._hass = hass
         self._site = site
         self.coordinator = coordinator
+        self.device_info = device_info

@@ -10,6 +10,7 @@ operation mode, and the grid export mode.
 
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -24,8 +25,9 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
     _attr_name = "Operational mode"
     _attr_options: list[str] = ["Autonomous", "Self consumption"]
 
-    def __init__(self, coordinator: PwCtrlCoordinator):
+    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
         """Initialize the number entity."""
+        self._attr_device_info = device_info
         super().__init__(coordinator)
 
     @callback
@@ -60,8 +62,9 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
     _attr_name = "Export mode"
     _attr_options: list[str] = ["Never", "PV only", "Battery ok"]
 
-    def __init__(self, coordinator: PwCtrlCoordinator):
+    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
         """Initialize the select entity."""
+        self._attr_device_info = device_info
         super().__init__(coordinator)
 
     @callback
@@ -95,6 +98,14 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform from a config entry."""
     entities: list[SelectEntity] = []
-    entities.append(PwCtrlOperationalModeSelectEntity(entry.runtime_data.coordinator))
-    entities.append(PwCtrlExportModeSelectEntity(entry.runtime_data.coordinator))
+    entities.append(
+        PwCtrlOperationalModeSelectEntity(
+            entry.runtime_data.coordinator, entry.runtime_data.device_info
+        )
+    )
+    entities.append(
+        PwCtrlExportModeSelectEntity(
+            entry.runtime_data.coordinator, entry.runtime_data.device_info
+        )
+    )
     async_add_entities(entities)
