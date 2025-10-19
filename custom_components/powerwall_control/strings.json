@@ -1,4 +1,5 @@
 {
+  "title": "Tesla Powerwall Control",
   "config": {
     "step": {
       "user": {
@@ -10,10 +11,10 @@
         }
       }
     },
-      "error": {
-          "invalid_token": "Invalid API Token",
-          "invalid_system_id": "Invalid Energy System ID",
-          "cannot_connect": "Can't connect to Netzero"
-      }
+    "error": {
+      "invalid_token": "Invalid API Token",
+      "invalid_system_id": "Invalid Energy System ID",
+      "cannot_connect": "Can't connect to Netzero"
+    }
   }
 }
