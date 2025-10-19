@@ -12,6 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import PwCtrlConfigEntry
+from .netzero import EnergySiteConfig
 
 
 class PwCtrlGridChargingSwitch(SwitchEntity):
@@ -21,9 +22,10 @@ class PwCtrlGridChargingSwitch(SwitchEntity):
     _attr_device_class = SwitchDeviceClass.SWITCH
     _attr_name = "Grid charging"
 
-    def __init__(self):
+    def __init__(self, config: EnergySiteConfig):
         """Initialize the switch entity."""
-        self._is_on = False
+        self.config = config
+        self._is_on = self.config.grid_charging
         # self._attr_device_info = ...  # For automatic device registration
         # self._attr_unique_id = ...
 
@@ -50,6 +52,6 @@ async def async_setup_entry(
 
     entities: list[SwitchEntity] = []
 
-    entities.append(PwCtrlGridChargingSwitch())
+    entities.append(PwCtrlGridChargingSwitch(entry.runtime_data.config))
 
     async_add_entities(entities)
