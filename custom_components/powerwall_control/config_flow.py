@@ -60,7 +60,8 @@ class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             try:
                 info = validate_input(user_input)
-                # Input validated, create the config entries
+                # Input validated, set the unique id and create the config entries
+                await self.async_set_unique_id(user_input["system_id"])
                 return self.async_create_entry(title=info["title"], data=user_input)
             except InvalidToken:
                 errors["base"] = "invalid_token"
