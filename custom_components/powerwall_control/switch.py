@@ -8,6 +8,7 @@ charging is enabled.
 """
 
 from homeassistant.components.switch import SwitchDeviceClass, SwitchEntity
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -24,6 +25,7 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
     _attr_device_class = SwitchDeviceClass.SWITCH
     _attr_name = "Grid charging"
     _attr_unique_id = "grid_charging"
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
         """Initialize the switch entity."""

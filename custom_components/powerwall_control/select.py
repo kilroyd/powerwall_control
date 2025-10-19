@@ -9,6 +9,7 @@ operation mode, and the grid export mode.
 """
 
 from homeassistant.components.select import SelectEntity
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -24,6 +25,7 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
 
     _attr_name = "Operational mode"
     _attr_unique_id = "operational_mode"
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_options: list[str] = ["Autonomous", "Self consumption"]
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
@@ -62,6 +64,7 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
 
     _attr_name = "Export mode"
     _attr_unique_id = "export_mode"
+    _attr_entity_category = EntityCategory.CONFIG
     _attr_options: list[str] = ["Never", "PV only", "Battery ok"]
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):

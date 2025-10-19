@@ -8,7 +8,7 @@ battery backup reserve value.
 """
 
 from homeassistant.components.number import NumberDeviceClass, NumberEntity
-from homeassistant.const import PERCENTAGE, PRECISION_WHOLE
+from homeassistant.const import PERCENTAGE, PRECISION_WHOLE, EntityCategory
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -29,6 +29,7 @@ class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_name = "Backup reserve"
     _attr_unique_id = "backup_reserve"
+    _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
         """Initialize the number entity."""
