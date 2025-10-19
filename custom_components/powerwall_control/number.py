@@ -36,14 +36,14 @@ class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         self._attr_native_value = self.coordinator.config.backup_reserve_percent
+        self._attr_icon = icon_for_battery_level(self._attr_native_value)
         self.async_write_ha_state()
 
     async def async_set_native_value(self, value: float) -> None:
         """Set new value."""
         value = int(value)
-        self._attr_native_value = value
-        # self.async_write_ha_state()
-        self._attr_icon = icon_for_battery_level(self.native_value)
+        await self.coordinator.async_request_control(backup_reserve_percent=value)
+        # When set the coordinator will call _handle_coordinator_update
 
 
 async def async_setup_entry(

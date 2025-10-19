@@ -43,11 +43,13 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
 
     async def async_turn_on(self, **kwargs):
         """Turn the switch on."""
-        self._is_on = True
+        await self.coordinator.async_request_control(grid_charging=True)
+        # When set the coordinator will call _handle_coordinator_update
 
     async def async_turn_off(self, **kwargs):
         """Turn the switch off."""
-        self._is_on = False
+        await self.coordinator.async_request_control(grid_charging=False)
+        # When set the coordinator will call _handle_coordinator_update
 
 
 async def async_setup_entry(

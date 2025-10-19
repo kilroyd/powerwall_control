@@ -37,14 +37,21 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
         elif mode == OperationalMode.SELF_CONSUMPTION:
             self._attr_current_option = "Self consumption"
         else:
-            # TODO: set unavailable
+            # TODO: set unavailable?
             self._attr_current_option = "Autonomous"
         self.async_write_ha_state()
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        self._attr_current_option = option
-        # self.async_write_ha_state()
+        if option == "Autonomous":
+            mode = OperationalMode.AUTONOMOUS
+        elif option == "Self consumption":
+            mode = OperationalMode.SELF_CONSUMPTION
+        else:
+            # TODO: ?
+            mode = OperationalMode.AUTONOMOUS
+        await self.coordinator.async_request_control(operational_mode=mode)
+        # When set the coordinator will call _handle_coordinator_update
 
 
 class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
@@ -71,8 +78,14 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        self._attr_current_option = option
-        # self.async_write_ha_state()
+        if option == "Battery ok":
+            exports = EnergyExportMode.BATTERY_OK
+        elif option == "PV only":
+            exports = EnergyExportMode.PV_ONLY
+        else:
+            exports = EnergyExportMode.NEVER
+        await self.coordinator.async_request_control(energy_exports=exports)
+        # When set the coordinator will call _handle_coordinator_update
 
 
 async def async_setup_entry(
