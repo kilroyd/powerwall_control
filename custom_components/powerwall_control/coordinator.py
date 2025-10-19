@@ -2,10 +2,8 @@
 
 from datetime import timedelta
 
-from aiohttp import ClientError
-
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import DOMAIN, LOGGER
 from .netzero import EnergySiteConfig
@@ -40,7 +38,7 @@ class PwCtrlCoordinator(DataUpdateCoordinator[EnergySiteConfig]):
 
     async def _async_update_data(self) -> None:
         """Refresh data."""
-        try:
-            await self.config.async_update()
-        except ClientError as ex:
-            raise UpdateFailed(f"The service is unavailable: {ex}") from ex
+        # ClientErrors are caught by DataUpdateCoordinator.  Netzero
+        # isn't raising any more specific errors, so just allow the
+        # default handling to take care of it.
+        await self.config.async_update()
