@@ -9,7 +9,7 @@ battery backup reserve value.
 
 from homeassistant.components.number import NumberDeviceClass, NumberEntity
 from homeassistant.const import PERCENTAGE, PRECISION_WHOLE
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.icon import icon_for_battery_level
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
@@ -32,7 +32,11 @@ class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
         """Initialize the number entity."""
         super().__init__(coordinator)
 
-        self._attr_native_value = coordinator.config.backup_reserve_percent
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._attr_native_value = self.coordinator.config.backup_reserve_percent
+        self.async_write_ha_state()
 
     async def async_set_native_value(self, value: float) -> None:
         """Set new value."""

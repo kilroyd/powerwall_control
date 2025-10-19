@@ -62,6 +62,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
     # This calls `async_setup_entry` function in each platform module.
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
+    # Update all entities with initial value
+    # TODO: this probably invokes a 2nd API update
+    await coordinator.async_refresh()
+
     return True
 
 

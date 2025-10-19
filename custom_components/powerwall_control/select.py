@@ -9,7 +9,7 @@ operation mode, and the grid export mode.
 """
 
 from homeassistant.components.select import SelectEntity
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -28,6 +28,9 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
         """Initialize the number entity."""
         super().__init__(coordinator)
 
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
         mode = self.coordinator.config.operational_mode
         if mode == OperationalMode.AUTONOMOUS:
             self._attr_current_option = "Autonomous"
@@ -36,6 +39,7 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
         else:
             # TODO: set unavailable
             self._attr_current_option = "Autonomous"
+        self.async_write_ha_state()
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
@@ -53,13 +57,17 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
         """Initialize the select entity."""
         super().__init__(coordinator)
 
-        mode = coordinator.config.energy_exports
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        mode = self.coordinator.config.energy_exports
         if mode == EnergyExportMode.BATTERY_OK:
             self._attr_current_option = "Battery ok"
         elif mode == EnergyExportMode.PV_ONLY:
             self._attr_current_option = "PV only"
         else:
             self._attr_current_option = "Never"
+        self.async_write_ha_state()
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""

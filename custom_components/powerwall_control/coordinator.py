@@ -14,7 +14,7 @@ from .netzero import EnergySiteConfig
 UPDATE_INTERVAL = timedelta(minutes=720)
 
 
-class PwCtrlCoordinator(DataUpdateCoordinator[EnergySiteConfig]):
+class PwCtrlCoordinator(DataUpdateCoordinator):
     """Class used to manage data collection.
 
     The Netzero API returns the status of multiple entities in a
@@ -30,7 +30,13 @@ class PwCtrlCoordinator(DataUpdateCoordinator[EnergySiteConfig]):
     def __init__(self, hass: HomeAssistant, config: EnergySiteConfig) -> None:
         """Initialize coordinator."""
         super().__init__(
-            hass, logger=LOGGER, name=DOMAIN, update_interval=UPDATE_INTERVAL
+            hass,
+            logger=LOGGER,
+            name=DOMAIN,
+            update_interval=UPDATE_INTERVAL,
+            # The API updates the data in config, and we don't return json in _async_update_data.
+            # So tell the DataUpdateCoordinator to always update all entities.
+            always_update=True,
         )
         # This object contains acceesors for all the data retreived,
         # and has an async_update call to refresh the data.

@@ -8,7 +8,7 @@ charging is enabled.
 """
 
 from homeassistant.components.switch import SwitchDeviceClass, SwitchEntity
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
@@ -27,14 +27,19 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
         """Initialize the switch entity."""
         super().__init__(coordinator)
 
-        self._is_on = coordinator.config.grid_charging
-        # self._attr_device_info = ...  # For automatic device registration
-        # self._attr_unique_id = ...
+        # Need an initial value
+        self._is_on = False
 
     @property
     def is_on(self) -> bool:
         """If the switch is currently on or off."""
         return self._is_on
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        """Handle updated data from the coordinator."""
+        self._is_on = self.coordinator.config.grid_charging
+        self.async_write_ha_state()
 
     async def async_turn_on(self, **kwargs):
         """Turn the switch on."""
