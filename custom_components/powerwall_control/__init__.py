@@ -25,8 +25,10 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
+from .coordinator import PwCtrlCoordinator
+
 # Temporarily use netzero directly to test in place within HA
-from .netzero import Auth, EnergySite, EnergySiteConfig
+from .netzero import Auth, EnergySite
 
 # List of platforms to support.
 PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
@@ -52,7 +54,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
     site = EnergySite(auth, entry.data["system_id"])
     config = await site.async_get_config()
 
-    entry.runtime_data = PwCtrlData(hass, site, config)
+    coordinator = PwCtrlCoordinator(hass, config)
+
+    entry.runtime_data = PwCtrlData(hass, site, coordinator)
 
     # Creates a HA object for each platform required.
     # This calls `async_setup_entry` function in each platform module.
@@ -75,8 +79,10 @@ class PwCtrlData:
     Netzero servers.
     """
 
-    def __init__(self, hass: HomeAssistant, site: EnergySite, config: EnergySiteConfig):
+    def __init__(
+        self, hass: HomeAssistant, site: EnergySite, coordinator: PwCtrlCoordinator
+    ):
         """Store hass and site."""
         self._hass = hass
         self._site = site
-        self.config = config
+        self.coordinator = coordinator

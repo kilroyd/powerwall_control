@@ -10,22 +10,24 @@ charging is enabled.
 from homeassistant.components.switch import SwitchDeviceClass, SwitchEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import PwCtrlConfigEntry
-from .netzero import EnergySiteConfig
+from .coordinator import PwCtrlCoordinator
 
 
-class PwCtrlGridChargingSwitch(SwitchEntity):
+class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
     """Grid Charging switch entity class."""
 
     _attr_has_entity_name = True
     _attr_device_class = SwitchDeviceClass.SWITCH
     _attr_name = "Grid charging"
 
-    def __init__(self, config: EnergySiteConfig):
+    def __init__(self, coordinator: PwCtrlCoordinator):
         """Initialize the switch entity."""
-        self.config = config
-        self._is_on = self.config.grid_charging
+        super().__init__(coordinator)
+
+        self._is_on = coordinator.config.grid_charging
         # self._attr_device_info = ...  # For automatic device registration
         # self._attr_unique_id = ...
 
@@ -52,6 +54,6 @@ async def async_setup_entry(
 
     entities: list[SwitchEntity] = []
 
-    entities.append(PwCtrlGridChargingSwitch(entry.runtime_data.config))
+    entities.append(PwCtrlGridChargingSwitch(entry.runtime_data.coordinator))
 
     async_add_entities(entities)

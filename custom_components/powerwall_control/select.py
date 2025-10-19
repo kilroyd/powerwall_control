@@ -11,21 +11,24 @@ operation mode, and the grid export mode.
 from homeassistant.components.select import SelectEntity
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import PwCtrlConfigEntry
-from .netzero import EnergyExportMode, EnergySiteConfig, OperationalMode
+from .coordinator import PwCtrlCoordinator
+from .netzero import EnergyExportMode, OperationalMode
 
 
-class PwCtrlOperationalModeSelectEntity(SelectEntity):
+class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
     """Operational mode select entity class."""
 
     _attr_name = "Operational mode"
     _attr_options: list[str] = ["Autonomous", "Self consumption"]
 
-    def __init__(self, config: EnergySiteConfig):
+    def __init__(self, coordinator: PwCtrlCoordinator):
         """Initialize the number entity."""
-        self.config = config
-        mode = config.operational_mode
+        super().__init__(coordinator)
+
+        mode = self.coordinator.config.operational_mode
         if mode == OperationalMode.AUTONOMOUS:
             self._attr_current_option = "Autonomous"
         elif mode == OperationalMode.SELF_CONSUMPTION:
@@ -40,16 +43,17 @@ class PwCtrlOperationalModeSelectEntity(SelectEntity):
         # self.async_write_ha_state()
 
 
-class PwCtrlExportModeSelectEntity(SelectEntity):
+class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
     """Export mode select entity class."""
 
     _attr_name = "Export mode"
     _attr_options: list[str] = ["Never", "PV only", "Battery ok"]
 
-    def __init__(self, config: EnergySiteConfig):
+    def __init__(self, coordinator: PwCtrlCoordinator):
         """Initialize the select entity."""
-        self.config = config
-        mode = config.energy_exports
+        super().__init__(coordinator)
+
+        mode = coordinator.config.energy_exports
         if mode == EnergyExportMode.BATTERY_OK:
             self._attr_current_option = "Battery ok"
         elif mode == EnergyExportMode.PV_ONLY:
@@ -70,6 +74,6 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform from a config entry."""
     entities: list[SelectEntity] = []
-    entities.append(PwCtrlOperationalModeSelectEntity(entry.runtime_data.config))
-    entities.append(PwCtrlExportModeSelectEntity(entry.runtime_data.config))
+    entities.append(PwCtrlOperationalModeSelectEntity(entry.runtime_data.coordinator))
+    entities.append(PwCtrlExportModeSelectEntity(entry.runtime_data.coordinator))
     async_add_entities(entities)

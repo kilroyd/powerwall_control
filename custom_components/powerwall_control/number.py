@@ -12,12 +12,13 @@ from homeassistant.const import PERCENTAGE, PRECISION_WHOLE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.icon import icon_for_battery_level
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from . import PwCtrlConfigEntry
-from .netzero import EnergySiteConfig
+from .coordinator import PwCtrlCoordinator
 
 
-class PwCtrlBackupReserveNumberEntity(NumberEntity):
+class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
     """Backup Reserve number entity class."""
 
     _attr_native_step = PRECISION_WHOLE
@@ -27,10 +28,11 @@ class PwCtrlBackupReserveNumberEntity(NumberEntity):
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_name = "Backup reserve"
 
-    def __init__(self, config: EnergySiteConfig):
+    def __init__(self, coordinator: PwCtrlCoordinator):
         """Initialize the number entity."""
-        self.config = config
-        self._attr_native_value = self.config.backup_reserve_percent
+        super().__init__(coordinator)
+
+        self._attr_native_value = coordinator.config.backup_reserve_percent
 
     async def async_set_native_value(self, value: float) -> None:
         """Set new value."""
@@ -47,5 +49,5 @@ async def async_setup_entry(
 ) -> None:
     """Set up number platform from a config entry."""
     entities: list[NumberEntity] = []
-    entities.append(PwCtrlBackupReserveNumberEntity(entry.runtime_data.config))
+    entities.append(PwCtrlBackupReserveNumberEntity(entry.runtime_data.coordinator))
     async_add_entities(entities)
