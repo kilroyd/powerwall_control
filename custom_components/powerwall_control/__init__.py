@@ -96,7 +96,7 @@ class PwCtrlData:
         site: EnergySite,
         coordinator: PwCtrlCoordinator,
         device_info: DeviceInfo,
-    ):
+    ) -> None:
         """Store hass and site."""
         self._hass = hass
         self._site = site

@@ -28,7 +28,7 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_options: list[str] = ["Autonomous", "Self consumption"]
 
-    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
+    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo) -> None:
         """Initialize the number entity."""
         self._attr_device_info = device_info
         super().__init__(coordinator)
@@ -67,7 +67,7 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
     _attr_entity_category = EntityCategory.CONFIG
     _attr_options: list[str] = ["Never", "PV only", "Battery ok"]
 
-    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
+    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo) -> None:
         """Initialize the select entity."""
         self._attr_device_info = device_info
         super().__init__(coordinator)

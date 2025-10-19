@@ -39,7 +39,7 @@ class IslandStatus(StrEnum):
 class Auth:
     """Class to make authenticated requests."""
 
-    def __init__(self, websession: ClientSession, access_token: str):
+    def __init__(self, websession: ClientSession, access_token: str) -> None:
         """Initialize the auth."""
         self.websession = websession
         self.host = "https://api.netzero.energy/api/v1"
@@ -62,7 +62,7 @@ class Auth:
 class EnergySiteStatus:
     """Class that represents an energy site's current status."""
 
-    def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}):
+    def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}) -> None:
         """Initialize a config object."""
         self.auth = auth
         self.id = id
@@ -140,7 +140,7 @@ class EnergySiteStatus:
 
     # TODO: support for wall connectors
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """Update the energy site status.
 
         Note that this retreives the full configuration.
@@ -153,7 +153,7 @@ class EnergySiteStatus:
 class EnergySiteConfig:
     """Class that represents an energy site's configuration."""
 
-    def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}):
+    def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}) -> None:
         """Initialize a config object.
 
         If initialized with default raw_data, then the property calls
@@ -200,7 +200,7 @@ class EnergySiteConfig:
         """A class from which live status of the site can be queried."""
         return EnergySiteStatus(self.auth, self.id, self.raw_data["live_status"])
 
-    async def async_control(self, **kwargs):
+    async def async_control(self, **kwargs) -> None:
         """Reconfigure the energy site with new parameters.
 
         Each parameter can be changed individually, or together.
@@ -229,7 +229,7 @@ class EnergySiteConfig:
         resp.raise_for_status()
         self.raw_data = await resp.json()
 
-    async def async_update(self):
+    async def async_update(self) -> None:
         """Update the energy site configuration."""
         resp = await self.auth.request("get", f"{self.id}/config")
         resp.raise_for_status()
@@ -239,7 +239,7 @@ class EnergySiteConfig:
 class EnergySite:
     """Class representing a single energy site."""
 
-    def __init__(self, auth: Auth, id: str):
+    def __init__(self, auth: Auth, id: str) -> None:
         """Initialize the API and store the auth so we can make requests."""
         self.auth = auth
         self.id = id

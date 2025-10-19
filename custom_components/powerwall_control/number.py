@@ -31,7 +31,7 @@ class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
     _attr_unique_id = "backup_reserve"
     _attr_entity_category = EntityCategory.CONFIG
 
-    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
+    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo) -> None:
         """Initialize the number entity."""
         self._attr_device_info = device_info
         super().__init__(coordinator)

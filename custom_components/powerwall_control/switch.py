@@ -27,7 +27,7 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
     _attr_unique_id = "grid_charging"
     _attr_entity_category = EntityCategory.CONFIG
 
-    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
+    def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo) -> None:
         """Initialize the switch entity."""
         self._attr_device_info = device_info
         super().__init__(coordinator)
@@ -46,12 +46,12 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
         self._is_on = self.coordinator.config.grid_charging
         self.async_write_ha_state()
 
-    async def async_turn_on(self, **kwargs):
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn the switch on."""
         await self.coordinator.async_request_control(grid_charging=True)
         # When set the coordinator will call _handle_coordinator_update
 
-    async def async_turn_off(self, **kwargs):
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn the switch off."""
         await self.coordinator.async_request_control(grid_charging=False)
         # When set the coordinator will call _handle_coordinator_update
