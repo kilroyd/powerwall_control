@@ -248,4 +248,4 @@ class EnergySite:
         """Return the energy site configuration."""
         resp = await self.auth.request("get", f"{self.id}/config")
         resp.raise_for_status()
-        return EnergySiteConfig(self.auth, self.id, resp.json)
+        return EnergySiteConfig(self.auth, self.id, await resp.json())
