@@ -23,6 +23,7 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
     _attr_has_entity_name = True
     _attr_device_class = SwitchDeviceClass.SWITCH
     _attr_name = "Grid charging"
+    _attr_unique_id = "grid_charging"
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
         """Initialize the switch entity."""

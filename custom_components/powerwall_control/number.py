@@ -28,6 +28,7 @@ class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
     _attr_device_class = NumberDeviceClass.BATTERY
     _attr_native_unit_of_measurement = PERCENTAGE
     _attr_name = "Backup reserve"
+    _attr_unique_id = "backup_reserve"
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
         """Initialize the number entity."""

@@ -23,6 +23,7 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
     """Operational mode select entity class."""
 
     _attr_name = "Operational mode"
+    _attr_unique_id = "operational_mode"
     _attr_options: list[str] = ["Autonomous", "Self consumption"]
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
@@ -60,6 +61,7 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
     """Export mode select entity class."""
 
     _attr_name = "Export mode"
+    _attr_unique_id = "export_mode"
     _attr_options: list[str] = ["Never", "PV only", "Battery ok"]
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo):
