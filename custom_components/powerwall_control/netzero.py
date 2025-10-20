@@ -62,11 +62,13 @@ class Auth:
 class EnergySiteStatus:
     """Class that represents an energy site's current status."""
 
-    def __init__(self, auth: Auth, site_id: str, raw_data: dict[str, Any] = {}) -> None:
+    def __init__(
+        self, auth: Auth, site_id: str, raw_data: dict[str, Any] | None = None
+    ) -> None:
         """Initialize a config object."""
         self.auth = auth
         self.site_id = site_id
-        self.raw_data = raw_data
+        self.raw_data = {} if raw_data is None else raw_data
 
     @property
     def percentage_charged(self) -> float:
@@ -153,7 +155,9 @@ class EnergySiteStatus:
 class EnergySiteConfig:
     """Class that represents an energy site's configuration."""
 
-    def __init__(self, auth: Auth, site_id: str, raw_data: dict[str, Any] = {}) -> None:
+    def __init__(
+        self, auth: Auth, site_id: str, raw_data: dict[str, Any] | None = None
+    ) -> None:
         """Initialize a config object.
 
         If initialized with default raw_data, then the property calls
@@ -167,7 +171,7 @@ class EnergySiteConfig:
         """
         self.auth = auth
         self.site_id = site_id
-        self.raw_data = raw_data
+        self.raw_data = {} if raw_data is None else raw_data
 
     @property
     def backup_reserve_percent(self) -> int:
