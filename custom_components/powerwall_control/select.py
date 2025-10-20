@@ -33,6 +33,9 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
         self._attr_device_info = device_info
         super().__init__(coordinator)
 
+        # Need an initial value
+        self._attr_current_option = "Autonomous"
+
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
@@ -71,6 +74,9 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
         """Initialize the select entity."""
         self._attr_device_info = device_info
         super().__init__(coordinator)
+
+        # Need an initial value
+        self._attr_current_option = "Never"
 
     @callback
     def _handle_coordinator_update(self) -> None:

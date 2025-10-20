@@ -36,6 +36,10 @@ class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
         self._attr_device_info = device_info
         super().__init__(coordinator)
 
+        # Need initial values
+        self._attr_native_value = 20
+        self._attr_icon = icon_for_battery_level(self._attr_native_value)
+
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
