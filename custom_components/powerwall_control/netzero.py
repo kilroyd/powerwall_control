@@ -62,10 +62,10 @@ class Auth:
 class EnergySiteStatus:
     """Class that represents an energy site's current status."""
 
-    def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}) -> None:
+    def __init__(self, auth: Auth, site_id: str, raw_data: dict[str, Any] = {}) -> None:
         """Initialize a config object."""
         self.auth = auth
-        self.id = id
+        self.site_id = site_id
         self.raw_data = raw_data
 
     @property
@@ -145,7 +145,7 @@ class EnergySiteStatus:
 
         Note that this retreives the full configuration.
         """
-        resp = await self.auth.request("get", f"{self.id}/config")
+        resp = await self.auth.request("get", f"{self.site_id}/config")
         resp.raise_for_status()
         self.raw_data = await resp.json()["live_status"]
 
@@ -153,7 +153,7 @@ class EnergySiteStatus:
 class EnergySiteConfig:
     """Class that represents an energy site's configuration."""
 
-    def __init__(self, auth: Auth, id: str, raw_data: dict[str, Any] = {}) -> None:
+    def __init__(self, auth: Auth, site_id: str, raw_data: dict[str, Any] = {}) -> None:
         """Initialize a config object.
 
         If initialized with default raw_data, then the property calls
@@ -166,7 +166,7 @@ class EnergySiteConfig:
 
         """
         self.auth = auth
-        self.id = id
+        self.site_id = site_id
         self.raw_data = raw_data
 
     @property
@@ -198,7 +198,7 @@ class EnergySiteConfig:
     @property
     def live_status(self) -> EnergySiteStatus:
         """A class from which live status of the site can be queried."""
-        return EnergySiteStatus(self.auth, self.id, self.raw_data["live_status"])
+        return EnergySiteStatus(self.auth, self.site_id, self.raw_data["live_status"])
 
     async def async_control(self, **kwargs) -> None:
         """Reconfigure the energy site with new parameters.
@@ -225,13 +225,13 @@ class EnergySiteConfig:
         value = kwargs.get("operational_mode")
         if value is not None:
             json["operational_mode"] = str(value)
-        resp = await self.auth.request("post", f"{self.id}/config", json=json)
+        resp = await self.auth.request("post", f"{self.site_id}/config", json=json)
         resp.raise_for_status()
         self.raw_data = await resp.json()
 
     async def async_update(self) -> None:
         """Update the energy site configuration."""
-        resp = await self.auth.request("get", f"{self.id}/config")
+        resp = await self.auth.request("get", f"{self.site_id}/config")
         resp.raise_for_status()
         self.raw_data = await resp.json()
 
@@ -239,13 +239,13 @@ class EnergySiteConfig:
 class EnergySite:
     """Class representing a single energy site."""
 
-    def __init__(self, auth: Auth, id: str) -> None:
+    def __init__(self, auth: Auth, site_id: str) -> None:
         """Initialize the API and store the auth so we can make requests."""
         self.auth = auth
-        self.id = id
+        self.site_id = site_id
 
     async def async_get_config(self) -> EnergySiteConfig:
         """Return the energy site configuration."""
-        resp = await self.auth.request("get", f"{self.id}/config")
+        resp = await self.auth.request("get", f"{self.site_id}/config")
         resp.raise_for_status()
-        return EnergySiteConfig(self.auth, self.id, await resp.json())
+        return EnergySiteConfig(self.auth, self.site_id, await resp.json())
