@@ -91,7 +91,8 @@ def parse_args():
 
     if not (args.api_token and args.system_id):
         print(
-            "error: API token and System ID must be specified, either by --system-json or --api-token and system-id"
+            "error: API token and System ID must be specified, either by "
+            "--system-json or --api-token and system-id"
         )
         sys.exit(1)
 
