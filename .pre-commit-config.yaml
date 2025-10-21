@@ -15,6 +15,7 @@ repos:
     -   id: check-shebang-scripts-are-executable
     -   id: check-symlinks
     -   id: check-toml
+    -   id: check-yaml
     -   id: detect-private-key
     -   id: end-of-file-fixer
     -   id: fix-byte-order-marker
