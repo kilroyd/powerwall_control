@@ -22,6 +22,7 @@ Teslemetry.
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.typing import ConfigType
@@ -31,6 +32,9 @@ from .coordinator import PwCtrlCoordinator
 
 # Temporarily use netzero directly to test in place within HA
 from .netzero import Auth, EnergySite
+
+# We don't have global configuration
+CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
 
 # List of platforms to support.
 PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
