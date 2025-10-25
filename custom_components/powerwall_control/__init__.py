@@ -31,7 +31,7 @@ from .const import DOMAIN
 from .coordinator import PwCtrlCoordinator
 
 # Temporarily use netzero directly to test in place within HA
-from .netzero import Auth, EnergySite
+from .netzero import Auth, EnergySite, EnergySiteConfig
 
 # We don't have global configuration
 CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
@@ -42,6 +42,17 @@ PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
 # Our ConfigEntry.runtime_data will hold PwCtrlData.
 # Otherwise access the config entries via the .data[] dictionary.
 type PwCtrlConfigEntry = ConfigEntry[PwCtrlData]
+
+
+async def async_get_config(
+    hass: HomeAssistant, api_token: str, system_id: str
+) -> (EnergySite, EnergySiteConfig):
+    """Connect to Netzero and retreive the site and site configuration."""
+    session = async_get_clientsession(hass)
+    auth = Auth(session, api_token)
+    site = EnergySite(auth, system_id)
+    config = await site.async_get_config()
+    return (site, config)
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
@@ -59,11 +70,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
         manufacturer="Tesla",
         name="Powerwall",
     )
-    session = async_get_clientsession(hass)
+
     # Create API connection
-    auth = Auth(session, entry.data["api_token"])
-    site = EnergySite(auth, entry.data["system_id"])
-    config = await site.async_get_config()
+    site, config = await async_get_config(
+        hass, entry.data["api_token"], entry.data["system_id"]
+    )
 
     coordinator = PwCtrlCoordinator(hass, config)
 

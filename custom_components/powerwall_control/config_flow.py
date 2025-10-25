@@ -10,10 +10,13 @@ system ID which we can then use to talk to the Netzero servers.
 import re
 from typing import Any
 
+import aiohttp
 import voluptuous as vol
 
 from homeassistant import config_entries, exceptions
+from homeassistant.core import HomeAssistant
 
+from . import async_get_config
 from .const import DOMAIN
 
 # Specify items in the order they are to be displayed in the UI
@@ -29,7 +32,7 @@ API_TOKEN_RE = re.compile(r"[0-9A-z]{40,}$")
 SYSTEM_ID_RE = re.compile(r"[0-9]+$")
 
 
-def validate_input(data: dict) -> dict[str, Any]:
+async def validate_input(data: dict, hass: HomeAssistant) -> dict[str, Any]:
     """Validate the user input allows us to connect.
 
     Data has the keys from DATA_SCHEMA with values provided by the user.
@@ -40,7 +43,11 @@ def validate_input(data: dict) -> dict[str, Any]:
     if not SYSTEM_ID_RE.match(data["system_id"]):
         raise InvalidSystemId
 
-    # TODO: try to connect to Netzero
+    # Verify we can connect to Netzero with the key and id
+    try:
+        _, _ = await async_get_config(hass, data["api_token"], data["system_id"])
+    except aiohttp.ClientResponseError as e:
+        raise CannotConnect from e
 
     # Return info we want stored in the config entry
     return {"title": "Energy site " + data["system_id"], "system_id": data["system_id"]}
@@ -59,7 +66,7 @@ class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input is not None:
             try:
-                info = validate_input(user_input)
+                info = await validate_input(user_input, self.hass)
                 # Input validated, set the unique id and create the config entries
                 await self.async_set_unique_id(info["system_id"])
                 return self.async_create_entry(title=info["title"], data=user_input)
