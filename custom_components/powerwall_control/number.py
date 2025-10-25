@@ -22,13 +22,14 @@ from .coordinator import PwCtrlCoordinator
 class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
     """Backup Reserve number entity class."""
 
+    _attr_has_entity_name = True
     _attr_native_step = PRECISION_WHOLE
     _attr_native_min_value = 0
     _attr_native_max_value = 100
     _attr_device_class = NumberDeviceClass.BATTERY
     _attr_native_unit_of_measurement = PERCENTAGE
-    _attr_name = "Backup reserve"
     _attr_unique_id = "backup_reserve"
+    _attr_translation_key = _attr_unique_id
     _attr_entity_category = EntityCategory.CONFIG
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo) -> None:

@@ -17,6 +17,11 @@
     }
   },
   "entity": {
+    "number": {
+      "backup_reserve": {
+        "name": "Backup reserve"
+      }
+    },
     "select": {
       "operational_mode": {
         "name": "Operational mode",
