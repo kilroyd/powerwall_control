@@ -13,8 +13,7 @@
     },
     "error": {
       "invalid_token": "Invalid API token",
-      "invalid_system_id": "Invalid Energy System ID",
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect]"
+      "invalid_system_id": "Invalid Energy System ID"
     }
   }
 }
