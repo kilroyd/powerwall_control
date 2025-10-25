@@ -16,5 +16,24 @@
       "invalid_system_id": "Invalid Energy System ID",
       "cannot_connect": "[%key:common::config_flow::error::cannot_connect]"
     }
+  },
+  "entity": {
+    "select": {
+      "operational_mode": {
+        "name": "Operational mode",
+        "state": {
+          "auto": "Autonomous",
+          "self": "Self consumption"
+        }
+      },
+      "export_mode": {
+        "name": "Energy export mode",
+        "state": {
+          "never": "Never",
+          "pv_only": "PV only",
+          "battery_ok": "Battery ok"
+        }
+      }
+    }
   }
 }
