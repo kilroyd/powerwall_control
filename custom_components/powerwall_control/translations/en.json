@@ -13,7 +13,8 @@
     },
     "error": {
       "invalid_token": "Invalid API token",
-      "invalid_system_id": "Invalid Energy System ID"
+      "invalid_system_id": "Invalid Energy System ID",
+      "cannot_connect": "Failed to connect to Netzero with this API token and System ID"
     }
   },
   "entity": {
