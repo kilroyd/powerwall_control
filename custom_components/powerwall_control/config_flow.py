@@ -42,8 +42,8 @@ def validate_input(data: dict) -> dict[str, Any]:
 
     # TODO: try to connect to Netzero
 
-    # The title ends up being the device name displayed to the user
-    return {"title": "Energy site " + data["system_id"]}
+    # Return info we want stored in the config entry
+    return {"title": "Energy site " + data["system_id"], "system_id": data["system_id"]}
 
 
 class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -61,7 +61,7 @@ class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             try:
                 info = validate_input(user_input)
                 # Input validated, set the unique id and create the config entries
-                await self.async_set_unique_id(user_input["system_id"])
+                await self.async_set_unique_id(info["system_id"])
                 return self.async_create_entry(title=info["title"], data=user_input)
             except InvalidToken:
                 errors["base"] = "invalid_token"
