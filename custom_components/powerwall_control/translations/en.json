@@ -15,5 +15,24 @@
       "invalid_token": "Invalid API token",
       "invalid_system_id": "Invalid Energy System ID"
     }
+  },
+  "entity": {
+    "select": {
+      "operational_mode": {
+        "name": "Operational mode",
+        "state": {
+          "auto": "Autonomous",
+          "self": "Self consumption"
+        }
+      },
+      "export_mode": {
+        "name": "Energy export mode",
+        "state": {
+          "never": "Never",
+          "pv_only": "PV only",
+          "battery_ok": "Battery ok"
+        }
+      }
+    }
   }
 }
