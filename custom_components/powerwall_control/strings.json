@@ -34,6 +34,11 @@
           "battery_ok": "Battery ok"
         }
       }
+    },
+    "switch": {
+      "grid_charging": {
+        "name": "Grid charging"
+      }
     }
   }
 }
