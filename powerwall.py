@@ -164,6 +164,15 @@ async def main():
   Storm mode:                 {"Active" if status.storm_mode_active else "Inactive"}
   Timestamp:                  {status.timestamp}""")
 
+        wcs = status.wall_connectors
+        print(f"Wall connectors: {len(wcs)}")
+        for w in wcs:
+            print(f"""  DIN: {w.din}
+    State:       {w.state}
+    Fault state: {w.fault_state}
+    Power usage: {w.power}W
+""")
+
     return 0
 
 

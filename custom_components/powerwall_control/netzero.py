@@ -60,6 +60,36 @@ class Auth:
         )
 
 
+class WallConnector:
+    """Class that represents a Tesla Wall Connector."""
+
+    def __init__(self, raw_data: dict[str, Any]):
+        """Initialize a Wall Connector object."""
+        self.raw_data = raw_data
+
+    @property
+    def din(self) -> str:
+        """Identifying number."""
+        return self.raw_data["din"]
+
+    @property
+    def state(self) -> int:
+        """State."""
+        # TODO: translate to enums with descriptive states
+        return self.raw_data["wall_connector_state"]
+
+    @property
+    def fault_data(self) -> int:
+        """Fault state."""
+        # TODO: translate to enums with descriptive states
+        return self.raw_data["wall_connector_fault_state"]
+
+    @property
+    def power(self) -> int:
+        """Power being pulled in W."""
+        return self.raw_data["wall_connector_power"]
+
+
 class EnergySiteStatus:
     """Class that represents an energy site's current status."""
 
@@ -141,7 +171,15 @@ class EnergySiteStatus:
         """Time associated with current site readings."""
         return datetime.fromisoformat(self.raw_data["timestamp"])
 
-    # TODO: support for wall connectors
+    @property
+    def wall_connectors(self) -> dict[str, WallConnector]:
+        """Return associated wall connector state."""
+        # Convert the list of wall connectors to a dictionary indexed
+        # by id.
+        wcdict = {}
+        for j in self.raw_data["wall_connectors"]:
+            wcdict[j["din"]] = WallConnector(j)
+        return wcdict
 
     async def async_update(self) -> None:
         """Update the energy site status.
