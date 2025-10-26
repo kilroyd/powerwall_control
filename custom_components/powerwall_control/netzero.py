@@ -11,6 +11,7 @@ class OperationalMode(StrEnum):
     """States that may be used by operational mode."""
 
     AUTONOMOUS = "autonomous"
+    BACKUP = "backup"
     SELF_CONSUMPTION = "self_consumption"
 
 
