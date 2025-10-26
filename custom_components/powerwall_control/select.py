@@ -27,7 +27,7 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
     _attr_unique_id = "operational_mode"
     _attr_translation_key = _attr_unique_id
     _attr_entity_category = EntityCategory.CONFIG
-    _attr_options: list[str] = ["auto", "self"]
+    _attr_options: list[str] = ["auto", "backup", "self"]
 
     def __init__(self, coordinator: PwCtrlCoordinator, device_info: DeviceInfo) -> None:
         """Initialize the number entity."""
@@ -43,6 +43,8 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
         mode = self.coordinator.config.operational_mode
         if mode == OperationalMode.AUTONOMOUS:
             self._attr_current_option = "auto"
+        elif mode == OperationalMode.BACKUP:
+            self._attr_current_option = "backup"
         elif mode == OperationalMode.SELF_CONSUMPTION:
             self._attr_current_option = "self"
         else:
@@ -54,6 +56,8 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
         """Change the selected option."""
         if option == "auto":
             mode = OperationalMode.AUTONOMOUS
+        elif option == "backup":
+            mode = OperationalMode.BACKUP
         elif option == "self":
             mode = OperationalMode.SELF_CONSUMPTION
         else:

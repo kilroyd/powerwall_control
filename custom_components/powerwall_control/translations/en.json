@@ -28,6 +28,7 @@
         "name": "Operational mode",
         "state": {
           "auto": "Autonomous",
+          "backup": "Backup",
           "self": "Self consumption"
         }
       },

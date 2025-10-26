@@ -61,9 +61,9 @@ def parse_args():
     parser.add_argument(
         "--set-mode",
         "-m",
-        choices=["auto", "self"],
+        choices=["auto", "backup", "self"],
         default=None,
-        help="Set operational mode (autonomous or self sufficiency)",
+        help="Set operational mode (autonomous, backup, or self sufficiency)",
     )
     parser.add_argument(
         "--grid-charging",
@@ -112,6 +112,8 @@ async def main():
         request += f" Operational mode {args.set_mode}\n"
         if args.set_mode == "auto":
             operational_mode = netzero.OperationalMode.AUTONOMOUS
+        elif args.set_mode == "backup":
+            operational_mode = netzero.OperationalMode.BACKUP
         else:
             operational_mode = netzero.OperationalMode.SELF_CONSUMPTION
 
