@@ -279,3 +279,10 @@ property-decorators = ["propcache.api.cached_property"]
 
 # Allow for powerwall.py script to write to stdout
 "powerwall.py" = ["T201"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = [".git"]
+asyncio_debug = true
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
