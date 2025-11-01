@@ -79,7 +79,7 @@ class WallConnector:
         return self.raw_data["wall_connector_state"]
 
     @property
-    def fault_data(self) -> int:
+    def fault_state(self) -> int:
         """Fault state."""
         # TODO: translate to enums with descriptive states
         return self.raw_data["wall_connector_fault_state"]
