@@ -454,3 +454,71 @@ async def test_energy_site_status_update():
                 },
                 allow_redirects=True,
             )
+
+
+async def test_energy_site_status_wall_connectors():
+    """Test EnergySiteStatus wall_connectors."""
+    token = "abcdef"
+    system_id = 12345
+    expected_response = {
+        "backup_reserve_percent": 80,
+        "operational_mode": "autonomous",
+        "energy_exports": "pv_only",
+        "grid_charging": True,
+        "live_status": {
+            "percentage_charged": 100.0,
+            "solar_power": 4140,
+            "battery_power": -2520,
+            "load_power": 1620,
+            "grid_power": 110,
+            "generator_power": 40,
+            "grid_status": "Active",
+            "island_status": "on_grid",
+            "storm_mode_active": False,
+            "timestamp": "2020-12-31T23:59:59.900Z",
+            "wall_connectors": [
+                {
+                    "din": "abcd",
+                    "wall_connector_state": 1,
+                    "wall_connector_fault_state": 2,
+                    "wall_connector_power": 0,
+                },
+                {
+                    "din": "efgh",
+                    "wall_connector_state": 2,
+                    "wall_connector_fault_state": 1,
+                    "wall_connector_power": 100,
+                },
+            ],
+        },
+    }
+
+    with aioresponses() as mock:
+        mock.get(
+            f"https://api.netzero.energy/api/v1/{system_id}/config",
+            status=200,
+            payload=expected_response,
+        )
+        async with aiohttp.ClientSession() as session:
+            auth = netzero.Auth(session, token)
+            status = netzero.EnergySiteStatus(auth, system_id)
+            await status.async_update()
+
+            wc = status.wall_connectors
+            assert "abcd" in wc
+            assert "efgh" in wc
+            assert wc["abcd"].din == "abcd"
+            assert wc["abcd"].state == 1
+            assert wc["abcd"].fault_state == 2
+            assert wc["abcd"].power == 0
+            assert wc["efgh"].din == "efgh"
+            assert wc["efgh"].state == 2
+            assert wc["efgh"].fault_state == 1
+            assert wc["efgh"].power == 100
+            mock.assert_called_once_with(
+                f"https://api.netzero.energy/api/v1/{system_id}/config",
+                headers={
+                    "authorization": f"Bearer {token}",
+                },
+                allow_redirects=True,
+            )
