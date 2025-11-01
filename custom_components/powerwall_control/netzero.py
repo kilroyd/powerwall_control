@@ -186,7 +186,7 @@ class EnergySiteStatus:
 
         Note that this retreives the full configuration.
         """
-        resp = await self.auth.request("get", f"{self.site_id}/config")
+        resp = await self.auth.request("GET", f"{self.site_id}/config")
         resp.raise_for_status()
         self.raw_data = await resp.json()["live_status"]
 
@@ -268,13 +268,13 @@ class EnergySiteConfig:
         value = kwargs.get("operational_mode")
         if value is not None:
             json["operational_mode"] = str(value)
-        resp = await self.auth.request("post", f"{self.site_id}/config", json=json)
+        resp = await self.auth.request("POST", f"{self.site_id}/config", json=json)
         resp.raise_for_status()
         self.raw_data = await resp.json()
 
     async def async_update(self) -> None:
         """Update the energy site configuration."""
-        resp = await self.auth.request("get", f"{self.site_id}/config")
+        resp = await self.auth.request("GET", f"{self.site_id}/config")
         resp.raise_for_status()
         self.raw_data = await resp.json()
 
@@ -289,6 +289,6 @@ class EnergySite:
 
     async def async_get_config(self) -> EnergySiteConfig:
         """Return the energy site configuration."""
-        resp = await self.auth.request("get", f"{self.site_id}/config")
+        resp = await self.auth.request("GET", f"{self.site_id}/config")
         resp.raise_for_status()
         return EnergySiteConfig(self.auth, self.site_id, await resp.json())
