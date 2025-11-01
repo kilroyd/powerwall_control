@@ -1,5 +1,7 @@
 """Test netzero API."""
 
+import datetime
+
 import aiohttp
 from aioresponses import aioresponses
 
@@ -260,5 +262,195 @@ async def test_energy_site_config_control():
                     "authorization": f"Bearer {token}",
                 },
                 json={"grid_charging": False},
+                allow_redirects=True,
+            )
+
+
+async def test_energy_site_live_status():
+    """Test EnergySiteConfig live_status."""
+    token = "abcdef"
+    system_id = 12345
+    expected_response = {
+        "backup_reserve_percent": 80,
+        "operational_mode": "autonomous",
+        "energy_exports": "pv_only",
+        "grid_charging": True,
+        "live_status": {
+            "percentage_charged": 100.0,
+            "solar_power": 4140,
+            "battery_power": -2520,
+            "load_power": 1620,
+            "grid_power": 110,
+            "generator_power": 40,
+            "grid_status": "Active",
+            "island_status": "on_grid",
+            "storm_mode_active": False,
+            "timestamp": "2020-12-31T23:59:59.900Z",
+        },
+    }
+
+    with aioresponses() as mock:
+        mock.get(
+            f"https://api.netzero.energy/api/v1/{system_id}/config",
+            status=200,
+            payload=expected_response,
+        )
+        async with aiohttp.ClientSession() as session:
+            auth = netzero.Auth(session, token)
+            config = netzero.EnergySiteConfig(auth, system_id)
+            await config.async_update()
+
+            status = config.live_status
+            assert status.percentage_charged == 100.0
+            assert status.solar_power == 4140
+            assert status.battery_power == -2520
+            assert status.load_power == 1620
+            assert status.grid_power == 110
+            assert status.generator_power == 40
+            assert status.grid_status == netzero.GridStatus.ACTIVE
+            assert status.island_status == netzero.IslandStatus.ON_GRID
+            assert not status.storm_mode_active
+            assert status.timestamp == datetime.datetime(
+                2020, 12, 31, 23, 59, 59, 900000, tzinfo=datetime.UTC
+            )
+
+            mock.assert_called_once_with(
+                f"https://api.netzero.energy/api/v1/{system_id}/config",
+                headers={
+                    "authorization": f"Bearer {token}",
+                },
+                allow_redirects=True,
+            )
+
+
+def test_energy_site_status_values():
+    """Test EnergySiteStatus with different values."""
+    json_status = [
+        {
+            "percentage_charged": 100.0,
+            "solar_power": 4140,
+            "battery_power": -2520,
+            "load_power": 1620,
+            "grid_power": 110,
+            "generator_power": 40,
+            "grid_status": "Active",
+            "island_status": "on_grid",
+            "storm_mode_active": False,
+            "timestamp": "2020-12-31T23:59:59.900Z",
+        },
+        {
+            "percentage_charged": 13.0,
+            "solar_power": 3000,
+            "battery_power": 0,
+            "load_power": 1000,
+            "grid_power": 2500,
+            "generator_power": 100,
+            "grid_status": "Inactive",
+            "island_status": "on_grid",
+            "storm_mode_active": True,
+            "timestamp": "2021-01-01T01:00:00.000Z",
+        },
+        {
+            "percentage_charged": 80.0,
+            "solar_power": 44,
+            "battery_power": 55,
+            "load_power": 66,
+            "grid_power": 77,
+            "generator_power": 88,
+            "grid_status": "Active",
+            "island_status": "off_grid",
+            "storm_mode_active": True,
+            "timestamp": "2022-02-28T12:00:00.000Z",
+        },
+    ]
+    charged = [100.0, 13.0, 80.0]
+    solar = [4140, 3000, 44]
+    battery = [-2520, 0, 55]
+    load = [1620, 1000, 66]
+    grid = [110, 2500, 77]
+    gen = [40, 100, 88]
+    grid_stat = [
+        netzero.GridStatus.ACTIVE,
+        netzero.GridStatus.INACTIVE,
+        netzero.GridStatus.ACTIVE,
+    ]
+    island = [
+        netzero.IslandStatus.ON_GRID,
+        netzero.IslandStatus.ON_GRID,
+        netzero.IslandStatus.OFF_GRID,
+    ]
+    storm = [False, True, True]
+    time = [
+        datetime.datetime(2020, 12, 31, 23, 59, 59, 900000, tzinfo=datetime.UTC),
+        datetime.datetime(2021, 1, 1, 1, 0, 0, 0, tzinfo=datetime.UTC),
+        datetime.datetime(2022, 2, 28, 12, 0, 0, 0, tzinfo=datetime.UTC),
+    ]
+    for i, s in enumerate(json_status):
+        status = netzero.EnergySiteStatus(None, None, s)
+
+        assert status.percentage_charged == charged[i]
+        assert status.solar_power == solar[i]
+        assert status.battery_power == battery[i]
+        assert status.load_power == load[i]
+        assert status.grid_power == grid[i]
+        assert status.generator_power == gen[i]
+        assert status.grid_status == grid_stat[i]
+        assert status.island_status == island[i]
+        assert status.storm_mode_active == storm[i]
+        assert status.timestamp == time[i]
+
+
+async def test_energy_site_status_update():
+    """Test EnergySiteStatus async_update."""
+    token = "abcdef"
+    system_id = 12345
+    expected_response = {
+        "backup_reserve_percent": 80,
+        "operational_mode": "autonomous",
+        "energy_exports": "pv_only",
+        "grid_charging": True,
+        "live_status": {
+            "percentage_charged": 100.0,
+            "solar_power": 4140,
+            "battery_power": -2520,
+            "load_power": 1620,
+            "grid_power": 110,
+            "generator_power": 40,
+            "grid_status": "Active",
+            "island_status": "on_grid",
+            "storm_mode_active": False,
+            "timestamp": "2020-12-31T23:59:59.900Z",
+        },
+    }
+
+    with aioresponses() as mock:
+        mock.get(
+            f"https://api.netzero.energy/api/v1/{system_id}/config",
+            status=200,
+            payload=expected_response,
+        )
+        async with aiohttp.ClientSession() as session:
+            auth = netzero.Auth(session, token)
+            status = netzero.EnergySiteStatus(auth, system_id)
+            await status.async_update()
+
+            assert status.percentage_charged == 100.0
+            assert status.solar_power == 4140
+            assert status.battery_power == -2520
+            assert status.load_power == 1620
+            assert status.grid_power == 110
+            assert status.generator_power == 40
+            assert status.grid_status == netzero.GridStatus.ACTIVE
+            assert status.island_status == netzero.IslandStatus.ON_GRID
+            assert not status.storm_mode_active
+            assert status.timestamp == datetime.datetime(
+                2020, 12, 31, 23, 59, 59, 900000, tzinfo=datetime.UTC
+            )
+
+            mock.assert_called_once_with(
+                f"https://api.netzero.energy/api/v1/{system_id}/config",
+                headers={
+                    "authorization": f"Bearer {token}",
+                },
                 allow_redirects=True,
             )
