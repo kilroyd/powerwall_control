@@ -167,7 +167,7 @@ class EnergySiteStatus:
         return self.raw_data["storm_mode_active"]
 
     @property
-    def timestamp(self) -> str:
+    def timestamp(self) -> datetime:
         """Time associated with current site readings."""
         return datetime.fromisoformat(self.raw_data["timestamp"])
 
@@ -188,7 +188,7 @@ class EnergySiteStatus:
         """
         resp = await self.auth.request("GET", f"{self.site_id}/config")
         resp.raise_for_status()
-        self.raw_data = await resp.json()["live_status"]
+        self.raw_data = (await resp.json())["live_status"]
 
 
 class EnergySiteConfig:
