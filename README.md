@@ -1,3 +1,4 @@
+[![Python package](https://github.com/kilroyd/powerwall_control/actions/workflows/python-package.yml/badge.svg)](https://github.com/kilroyd/powerwall_control/actions/workflows/python-package.yml)
 [![Hassfest](https://github.com/kilroyd/powerwall_control/actions/workflows/hassfest.yaml/badge.svg)](https://github.com/kilroyd/powerwall_control/actions/workflows/hassfest.yaml)
 [![Hacs](https://github.com/kilroyd/powerwall_control/actions/workflows/validate.yaml/badge.svg)](https://github.com/kilroyd/powerwall_control/actions/workflows/validate.yaml)
 
