@@ -93,7 +93,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
-    return True
+    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
 # Temp location. Move to appropriate file when we figure out what we
