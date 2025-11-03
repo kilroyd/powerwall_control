@@ -67,6 +67,15 @@ class WallConnector:
         """Initialize a Wall Connector object."""
         self.raw_data = raw_data
 
+    def __eq__(self, other: "WallConnector") -> bool:
+        """Compare WallConnector objects."""
+        return (
+            self.din == other.din
+            and self.state == other.state
+            and self.fault_state == other.fault_state
+            and self.power == other.power
+        )
+
     @property
     def din(self) -> str:
         """Identifying number."""
@@ -93,13 +102,27 @@ class WallConnector:
 class EnergySiteStatus:
     """Class that represents an energy site's current status."""
 
-    def __init__(
-        self, auth: Auth, site_id: str, raw_data: dict[str, Any] | None = None
-    ) -> None:
-        """Initialize a config object."""
-        self.auth = auth
+    def __init__(self, site_id: str, raw_data: dict[str, Any]) -> None:
+        """Initialize a status object."""
         self.site_id = site_id
-        self.raw_data = {} if raw_data is None else raw_data
+        self.raw_data = raw_data
+
+    def __eq__(self, other: "EnergySiteStatus") -> bool:
+        """Compare EnergySitestatus objects."""
+        return (
+            self.site_id == other.site_id
+            and self.percentage_charged == other.percentage_charged
+            and self.solar_power == other.solar_power
+            and self.battery_power == other.battery_power
+            and self.load_power == other.load_power
+            and self.grid_power == other.grid_power
+            and self.generator_power == other.generator_power
+            and self.grid_status == other.grid_status
+            and self.island_status == other.island_status
+            and self.storm_mode_active == other.storm_mode_active
+            # Strictly we should check the timestamp too
+            # self.timestamp == other.timestamp
+        )
 
     @property
     def percentage_charged(self) -> float:
@@ -181,36 +204,24 @@ class EnergySiteStatus:
             wcdict[j["din"]] = WallConnector(j)
         return wcdict
 
-    async def async_update(self) -> None:
-        """Update the energy site status.
-
-        Note that this retreives the full configuration.
-        """
-        resp = await self.auth.request("GET", f"{self.site_id}/config")
-        resp.raise_for_status()
-        self.raw_data = (await resp.json())["live_status"]
-
 
 class EnergySiteConfig:
     """Class that represents an energy site's configuration."""
 
-    def __init__(
-        self, auth: Auth, site_id: str, raw_data: dict[str, Any] | None = None
-    ) -> None:
-        """Initialize a config object.
-
-        If initialized with default raw_data, then the property calls
-        will fail. The only reason this is supported is to allow an
-        EnergySiteConfig to be instantiated, and then call
-        async_update or async_control on it. After this, property
-        usage will behave normally. This also allows the site
-        configuration to be set without having to get the current
-        configuration first.
-
-        """
-        self.auth = auth
+    def __init__(self, site_id: str, raw_data: dict[str, Any]) -> None:
+        """Initialize a config object."""
         self.site_id = site_id
-        self.raw_data = {} if raw_data is None else raw_data
+        self.raw_data = raw_data
+
+    def __eq__(self, other: "EnergySiteConfig") -> bool:
+        """Compare EnergySiteConfig objects."""
+        return (
+            self.site_id == other.site_id
+            and self.backup_reserve_percent == other.backup_reserve_percent
+            and self.operational_mode == other.operational_mode
+            and self.energy_exports == other.energy_exports
+            and self.grid_charging == other.grid_charging
+        )
 
     @property
     def backup_reserve_percent(self) -> int:
@@ -241,9 +252,24 @@ class EnergySiteConfig:
     @property
     def live_status(self) -> EnergySiteStatus:
         """A class from which live status of the site can be queried."""
-        return EnergySiteStatus(self.auth, self.site_id, self.raw_data["live_status"])
+        return EnergySiteStatus(self.site_id, self.raw_data["live_status"])
 
-    async def async_control(self, **kwargs) -> None:
+
+class EnergySite:
+    """Class representing a single energy site."""
+
+    def __init__(self, auth: Auth, site_id: str) -> None:
+        """Initialize the API and store the auth so we can make requests."""
+        self.auth = auth
+        self.site_id = site_id
+
+    async def async_get_config(self) -> EnergySiteConfig:
+        """Return the energy site configuration."""
+        resp = await self.auth.request("GET", f"{self.site_id}/config")
+        resp.raise_for_status()
+        return EnergySiteConfig(self.site_id, await resp.json())
+
+    async def async_set_config(self, **kwargs) -> EnergySiteConfig:
         """Reconfigure the energy site with new parameters.
 
         Each parameter can be changed individually, or together.
@@ -270,25 +296,5 @@ class EnergySiteConfig:
             json["operational_mode"] = str(value)
         resp = await self.auth.request("POST", f"{self.site_id}/config", json=json)
         resp.raise_for_status()
-        self.raw_data = await resp.json()
 
-    async def async_update(self) -> None:
-        """Update the energy site configuration."""
-        resp = await self.auth.request("GET", f"{self.site_id}/config")
-        resp.raise_for_status()
-        self.raw_data = await resp.json()
-
-
-class EnergySite:
-    """Class representing a single energy site."""
-
-    def __init__(self, auth: Auth, site_id: str) -> None:
-        """Initialize the API and store the auth so we can make requests."""
-        self.auth = auth
-        self.site_id = site_id
-
-    async def async_get_config(self) -> EnergySiteConfig:
-        """Return the energy site configuration."""
-        resp = await self.auth.request("GET", f"{self.site_id}/config")
-        resp.raise_for_status()
-        return EnergySiteConfig(self.auth, self.site_id, await resp.json())
+        return EnergySiteConfig(self.site_id, await resp.json())

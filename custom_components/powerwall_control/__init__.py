@@ -76,7 +76,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
         hass, entry.data["api_token"], entry.data["system_id"]
     )
 
-    coordinator = PwCtrlCoordinator(hass, config)
+    coordinator = PwCtrlCoordinator(hass, site)
 
     entry.runtime_data = PwCtrlData(hass, site, coordinator, device_info)
 
@@ -86,7 +86,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
 
     # Update all entities with initial values populated during
     # async_get_config() call
-    coordinator.async_set_updated_data({})
+    coordinator.async_set_updated_data(config)
 
     return True
 

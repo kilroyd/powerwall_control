@@ -40,7 +40,7 @@ class PwCtrlOperationalModeSelectEntity(CoordinatorEntity, SelectEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        mode = self.coordinator.config.operational_mode
+        mode = self.coordinator.data.operational_mode
         if mode == OperationalMode.AUTONOMOUS:
             self._attr_current_option = "auto"
         elif mode == OperationalMode.BACKUP:
@@ -87,7 +87,7 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        mode = self.coordinator.config.energy_exports
+        mode = self.coordinator.data.energy_exports
         if mode == EnergyExportMode.BATTERY_OK:
             self._attr_current_option = "battery_ok"
         elif mode == EnergyExportMode.PV_ONLY:

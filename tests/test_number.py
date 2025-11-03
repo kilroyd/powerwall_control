@@ -28,7 +28,7 @@ async def test_number(hass):
     # Patch async_get_config to return initial JSON
     with patch(
         "custom_components.powerwall_control.netzero.EnergySite.async_get_config",
-        return_value=(EnergySiteConfig(None, 1234567, DEFAULT_JSON)),
+        return_value=(EnergySiteConfig(123456, DEFAULT_JSON)),
     ):
         entry.add_to_hass(hass)
         await hass.config_entries.async_setup(entry.entry_id)

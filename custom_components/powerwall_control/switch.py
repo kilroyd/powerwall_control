@@ -43,7 +43,7 @@ class PwCtrlGridChargingSwitch(CoordinatorEntity, SwitchEntity):
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
-        self._is_on = self.coordinator.config.grid_charging
+        self._is_on = self.coordinator.data.grid_charging
         self.async_write_ha_state()
 
     async def async_turn_on(self, **kwargs) -> None:

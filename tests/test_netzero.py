@@ -153,7 +153,7 @@ def test_energy_site_config_values():
     charging = [True, False, True]
 
     for i, c in enumerate(json_cfg):
-        config = netzero.EnergySiteConfig(None, None, c)
+        config = netzero.EnergySiteConfig(12345, c)
 
         assert config.backup_reserve_percent == backup[i]
         assert config.operational_mode == mode[i]
@@ -161,44 +161,8 @@ def test_energy_site_config_values():
         assert config.grid_charging == charging[i]
 
 
-async def test_energy_site_config_update():
-    """Test EnergySiteConfig async_update."""
-    token = "abcdef"
-    system_id = 12345
-    expected_response = {
-        "backup_reserve_percent": 80,
-        "operational_mode": "autonomous",
-        "energy_exports": "pv_only",
-        "grid_charging": True,
-    }
-
-    with aioresponses() as mock:
-        mock.get(
-            f"https://api.netzero.energy/api/v1/{system_id}/config",
-            status=200,
-            payload=expected_response,
-        )
-        async with aiohttp.ClientSession() as session:
-            auth = netzero.Auth(session, token)
-            config = netzero.EnergySiteConfig(auth, system_id)
-            await config.async_update()
-
-            assert config.backup_reserve_percent == 80
-            assert config.operational_mode == netzero.OperationalMode.AUTONOMOUS
-            assert config.energy_exports == netzero.EnergyExportMode.PV_ONLY
-            assert config.grid_charging
-
-            mock.assert_called_once_with(
-                f"https://api.netzero.energy/api/v1/{system_id}/config",
-                headers={
-                    "authorization": f"Bearer {token}",
-                },
-                allow_redirects=True,
-            )
-
-
-async def test_energy_site_config_control():
-    """Test EnergySiteConfig async_control."""
+async def test_energy_site_set_config():
+    """Test EnergySite async_set_config."""
     token = "abcdef"
     system_id = 12345
     expected_response = {
@@ -217,9 +181,9 @@ async def test_energy_site_config_control():
         )
         async with aiohttp.ClientSession() as session:
             auth = netzero.Auth(session, token)
-            config = netzero.EnergySiteConfig(auth, system_id)
+            site = netzero.EnergySite(auth, system_id)
 
-            await config.async_control(backup_reserve_percent=100)
+            _ = await site.async_set_config(backup_reserve_percent=100)
             mock.assert_called_once_with(
                 f"https://api.netzero.energy/api/v1/{system_id}/config",
                 method="POST",
@@ -230,7 +194,7 @@ async def test_energy_site_config_control():
                 allow_redirects=True,
             )
 
-            await config.async_control(
+            _ = await site.async_set_config(
                 operational_mode=netzero.OperationalMode.SELF_CONSUMPTION
             )
             mock.assert_called_with(
@@ -243,7 +207,9 @@ async def test_energy_site_config_control():
                 allow_redirects=True,
             )
 
-            await config.async_control(energy_exports=netzero.EnergyExportMode.NEVER)
+            _ = await site.async_set_config(
+                energy_exports=netzero.EnergyExportMode.NEVER
+            )
             mock.assert_called_with(
                 f"https://api.netzero.energy/api/v1/{system_id}/config",
                 method="POST",
@@ -254,7 +220,7 @@ async def test_energy_site_config_control():
                 allow_redirects=True,
             )
 
-            await config.async_control(grid_charging=False)
+            _ = await site.async_set_config(grid_charging=False)
             mock.assert_called_with(
                 f"https://api.netzero.energy/api/v1/{system_id}/config",
                 method="POST",
@@ -297,8 +263,8 @@ async def test_energy_site_live_status():
         )
         async with aiohttp.ClientSession() as session:
             auth = netzero.Auth(session, token)
-            config = netzero.EnergySiteConfig(auth, system_id)
-            await config.async_update()
+            site = netzero.EnergySite(auth, system_id)
+            config = await site.async_get_config()
 
             status = config.live_status
             assert status.percentage_charged == 100.0
@@ -386,7 +352,7 @@ def test_energy_site_status_values():
         datetime.datetime(2022, 2, 28, 12, 0, 0, 0, tzinfo=datetime.UTC),
     ]
     for i, s in enumerate(json_status):
-        status = netzero.EnergySiteStatus(None, None, s)
+        status = netzero.EnergySiteStatus(12345, s)
 
         assert status.percentage_charged == charged[i]
         assert status.solar_power == solar[i]
@@ -398,62 +364,6 @@ def test_energy_site_status_values():
         assert status.island_status == island[i]
         assert status.storm_mode_active == storm[i]
         assert status.timestamp == time[i]
-
-
-async def test_energy_site_status_update():
-    """Test EnergySiteStatus async_update."""
-    token = "abcdef"
-    system_id = 12345
-    expected_response = {
-        "backup_reserve_percent": 80,
-        "operational_mode": "autonomous",
-        "energy_exports": "pv_only",
-        "grid_charging": True,
-        "live_status": {
-            "percentage_charged": 100.0,
-            "solar_power": 4140,
-            "battery_power": -2520,
-            "load_power": 1620,
-            "grid_power": 110,
-            "generator_power": 40,
-            "grid_status": "Active",
-            "island_status": "on_grid",
-            "storm_mode_active": False,
-            "timestamp": "2020-12-31T23:59:59.900Z",
-        },
-    }
-
-    with aioresponses() as mock:
-        mock.get(
-            f"https://api.netzero.energy/api/v1/{system_id}/config",
-            status=200,
-            payload=expected_response,
-        )
-        async with aiohttp.ClientSession() as session:
-            auth = netzero.Auth(session, token)
-            status = netzero.EnergySiteStatus(auth, system_id)
-            await status.async_update()
-
-            assert status.percentage_charged == 100.0
-            assert status.solar_power == 4140
-            assert status.battery_power == -2520
-            assert status.load_power == 1620
-            assert status.grid_power == 110
-            assert status.generator_power == 40
-            assert status.grid_status == netzero.GridStatus.ACTIVE
-            assert status.island_status == netzero.IslandStatus.ON_GRID
-            assert not status.storm_mode_active
-            assert status.timestamp == datetime.datetime(
-                2020, 12, 31, 23, 59, 59, 900000, tzinfo=datetime.UTC
-            )
-
-            mock.assert_called_once_with(
-                f"https://api.netzero.energy/api/v1/{system_id}/config",
-                headers={
-                    "authorization": f"Bearer {token}",
-                },
-                allow_redirects=True,
-            )
 
 
 async def test_energy_site_status_wall_connectors():
@@ -501,8 +411,9 @@ async def test_energy_site_status_wall_connectors():
         )
         async with aiohttp.ClientSession() as session:
             auth = netzero.Auth(session, token)
-            status = netzero.EnergySiteStatus(auth, system_id)
-            await status.async_update()
+            site = netzero.EnergySite(auth, system_id)
+            config = await site.async_get_config()
+            status = config.live_status
 
             wc = status.wall_connectors
             assert "abcd" in wc
