@@ -131,11 +131,12 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         auth = netzero.Auth(session, args.api_token)
-        config = netzero.EnergySiteConfig(auth, args.system_id)
+        site = netzero.EnergySite(auth, args.system_id)
 
+        config = None
         if request:
             print(f"Changing Powerwall state...\n{request}")
-            await config.async_control(
+            config = await site.async_set_config(
                 backup_reserve_percent=args.set_backup,
                 grid_charging=args.grid_charging,
                 energy_exports=export_mode,
@@ -144,7 +145,8 @@ async def main():
 
         else:
             print("Reading Powerwall state...")
-            await config.async_update()
+            config = await site.async_get_config()
+        assert config
 
         print(f"""Configuration:
   Battery backup reserve: {config.backup_reserve_percent}%
