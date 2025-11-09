@@ -56,6 +56,11 @@ class PwCtrlCoordinator(DataUpdateCoordinator[netzero.EnergySiteConfig]):
             function=self._async_control,
         )
 
+    async def async_shutdown(self) -> None:
+        """Cancel any scheduled call, and ignore new runs."""
+        await super().async_shutdown()
+        self._debounced_control.async_shutdown()
+
     async def _async_update_data(self) -> netzero.EnergySiteConfig:
         """Refresh data."""
         # ClientErrors are caught by DataUpdateCoordinator.  Netzero
@@ -71,10 +76,12 @@ class PwCtrlCoordinator(DataUpdateCoordinator[netzero.EnergySiteConfig]):
         """
         self._reconfig_dict.update(kwargs)
         await self._debounced_control.async_call()
-        # TODO: cancel scheduled calls on shutdown
 
     async def _async_control(self) -> None:
         """Invoke the control call, and update listeners with result."""
+        if self._shutdown_requested:
+            return
+
         # Pass the accumulated configuration changes to netzero
         updated_config = await self.config.async_set_config(**self._reconfig_dict)
         self._reconfig_dict.clear()
