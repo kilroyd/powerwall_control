@@ -38,6 +38,7 @@ class PwCtrlCoordinator(DataUpdateCoordinator[netzero.EnergySiteConfig]):
             logger=LOGGER,
             name=DOMAIN,
             update_interval=UPDATE_INTERVAL,
+            update_method=site.async_get_config,
             # Filter out no-op updates
             always_update=False,
         )
@@ -60,13 +61,6 @@ class PwCtrlCoordinator(DataUpdateCoordinator[netzero.EnergySiteConfig]):
         """Cancel any scheduled call, and ignore new runs."""
         await super().async_shutdown()
         self._debounced_control.async_shutdown()
-
-    async def _async_update_data(self) -> netzero.EnergySiteConfig:
-        """Refresh data."""
-        # ClientErrors are caught by DataUpdateCoordinator.  Netzero
-        # isn't raising any more specific errors, so just allow the
-        # default handling to take care of it.
-        return await self.site.async_get_config()
 
     async def async_request_control(self, **kwargs) -> None:
         """Pass requests for control to netzero.
