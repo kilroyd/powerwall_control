@@ -27,11 +27,11 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.typing import ConfigType
 
+# Temporarily use netzero directly to test in place within HA
+import netzero
+
 from .const import DOMAIN
 from .coordinator import PwCtrlCoordinator
-
-# Temporarily use netzero directly to test in place within HA
-from .netzero import Auth, EnergySite, EnergySiteConfig
 
 # We don't have global configuration
 CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
@@ -46,11 +46,11 @@ type PwCtrlConfigEntry = ConfigEntry[PwCtrlData]
 
 async def async_get_config(
     hass: HomeAssistant, api_token: str, system_id: str
-) -> (EnergySite, EnergySiteConfig):
+) -> (netzero.EnergySite, netzero.EnergySiteConfig):
     """Connect to Netzero and retreive the site and site configuration."""
     session = async_get_clientsession(hass)
-    auth = Auth(session, api_token)
-    site = EnergySite(auth, system_id)
+    auth = netzero.Auth(session, api_token)
+    site = netzero.EnergySite(auth, system_id)
     config = await site.async_get_config()
     return (site, config)
 
@@ -108,7 +108,7 @@ class PwCtrlData:
     def __init__(
         self,
         hass: HomeAssistant,
-        site: EnergySite,
+        site: netzero.EnergySite,
         coordinator: PwCtrlCoordinator,
         device_info: DeviceInfo,
     ) -> None:

@@ -5,9 +5,9 @@ from datetime import timedelta
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+import netzero
 
 from .const import DOMAIN, LOGGER
-from .netzero import EnergySite, EnergySiteConfig
 
 # This integration is making configuration data available, which
 # generally shouldn't be changing, except where an automation is
@@ -18,7 +18,7 @@ REQUEST_CONTROL_DEFAULT_COOLDOWN = 15
 REQUEST_CONTROL_DEFAULT_IMMEDIATE = False
 
 
-class PwCtrlCoordinator(DataUpdateCoordinator[EnergySiteConfig]):
+class PwCtrlCoordinator(DataUpdateCoordinator[netzero.EnergySiteConfig]):
     """Class used to manage data collection.
 
     The Netzero API returns the status of multiple entities in a
@@ -31,7 +31,7 @@ class PwCtrlCoordinator(DataUpdateCoordinator[EnergySiteConfig]):
     single call.
     """
 
-    def __init__(self, hass: HomeAssistant, site: EnergySite) -> None:
+    def __init__(self, hass: HomeAssistant, site: netzero.EnergySite) -> None:
         """Initialize coordinator."""
         super().__init__(
             hass,
@@ -56,7 +56,7 @@ class PwCtrlCoordinator(DataUpdateCoordinator[EnergySiteConfig]):
             function=self._async_control,
         )
 
-    async def _async_update_data(self) -> EnergySiteConfig:
+    async def _async_update_data(self) -> netzero.EnergySiteConfig:
         """Refresh data."""
         # ClientErrors are caught by DataUpdateCoordinator.  Netzero
         # isn't raising any more specific errors, so just allow the
