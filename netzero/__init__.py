@@ -9,4 +9,5 @@ from .netzero import (
     GridStatus as GridStatus,
     IslandStatus as IslandStatus,
     OperationalMode as OperationalMode,
+    WallConnector as WallConnector,
 )
