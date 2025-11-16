@@ -63,7 +63,7 @@ class Auth:
 class WallConnector:
     """Class that represents a Tesla Wall Connector."""
 
-    def __init__(self, raw_data: dict[str, Any]):
+    def __init__(self, raw_data: dict[str, Any]) -> None:
         """Initialize a Wall Connector object."""
         self.raw_data = raw_data
 

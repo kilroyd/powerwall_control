@@ -232,6 +232,56 @@ async def test_energy_site_set_config():
             )
 
 
+def test_energy_site_config_eq():
+    """Test EnergySiteConfig __eq__ operator."""
+    json_cfg = [
+        {
+            "backup_reserve_percent": 80,
+            "operational_mode": "autonomous",
+            "energy_exports": "pv_only",
+            "grid_charging": True,
+        },
+        {
+            "backup_reserve_percent": 55,
+            "operational_mode": "self_consumption",
+            "energy_exports": "never",
+            "grid_charging": False,
+        },
+        {
+            "backup_reserve_percent": 11,
+            "operational_mode": "backup",
+            "energy_exports": "battery_ok",
+            "grid_charging": True,
+        },
+    ]
+
+    # Compare objects of the same type
+    for i1, c1 in enumerate(json_cfg):
+        for i2, c2 in enumerate(json_cfg):
+            config1 = netzero.EnergySiteConfig(12345, c1)
+            config2 = netzero.EnergySiteConfig(12345, c2)
+
+            if i1 != i2:
+                assert config1 != config2
+            else:
+                assert config1 == config2
+
+    for c in json_cfg:
+        config = netzero.EnergySiteConfig(12345, c)
+        # Compare against None
+        assert config is not None
+        assert config != None  # noqa: E711
+
+        # Compare against another type
+        assert config != "Bananas"
+
+    # Check behaviour with different system_id
+    for c in json_cfg:
+        config1 = netzero.EnergySiteConfig(12345, c)
+        config2 = netzero.EnergySiteConfig(54321, c)
+        assert config1 != config2
+
+
 async def test_energy_site_live_status():
     """Test EnergySiteConfig live_status."""
     token = "abcdef"
@@ -366,6 +416,74 @@ def test_energy_site_status_values():
         assert status.timestamp == time[i]
 
 
+def test_energy_site_status_eq():
+    """Test EnergySiteStatus __eq__ operator."""
+    json_status = [
+        {
+            "percentage_charged": 100.0,
+            "solar_power": 4140,
+            "battery_power": -2520,
+            "load_power": 1620,
+            "grid_power": 110,
+            "generator_power": 40,
+            "grid_status": "Active",
+            "island_status": "on_grid",
+            "storm_mode_active": False,
+            "timestamp": "2020-12-31T23:59:59.900Z",
+        },
+        {
+            "percentage_charged": 13.0,
+            "solar_power": 3000,
+            "battery_power": 0,
+            "load_power": 1000,
+            "grid_power": 2500,
+            "generator_power": 100,
+            "grid_status": "Inactive",
+            "island_status": "on_grid",
+            "storm_mode_active": True,
+            "timestamp": "2021-01-01T01:00:00.000Z",
+        },
+        {
+            "percentage_charged": 80.0,
+            "solar_power": 44,
+            "battery_power": 55,
+            "load_power": 66,
+            "grid_power": 77,
+            "generator_power": 88,
+            "grid_status": "Active",
+            "island_status": "off_grid",
+            "storm_mode_active": True,
+            "timestamp": "2022-02-28T12:00:00.000Z",
+        },
+    ]
+
+    # Compare objects of the same type
+    for i1, s1 in enumerate(json_status):
+        for i2, s2 in enumerate(json_status):
+            status1 = netzero.EnergySiteStatus(12345, s1)
+            status2 = netzero.EnergySiteStatus(12345, s2)
+
+            if i1 != i2:
+                assert status1 != status2
+            else:
+                assert status1 == status2
+
+    for s in json_status:
+        status = netzero.EnergySiteStatus(12345, s)
+        # Compare against None
+        assert status is not None
+        assert status != None  # noqa: E711
+
+        # Compare against another type
+        assert status != "Bananas"
+
+    # Check behaviour with different system_id
+    for s in json_status:
+        status1 = netzero.EnergySiteStatus(12345, s)
+        status2 = netzero.EnergySiteStatus(54321, s)
+        assert status1 != status2
+
+
 async def test_energy_site_status_wall_connectors():
     """Test EnergySiteStatus wall_connectors."""
     token = "abcdef"
@@ -416,6 +534,8 @@ async def test_energy_site_status_wall_connectors():
             status = config.live_status
 
             wc = status.wall_connectors
+            assert len(wc) == 2
+            # Check two entries to ensure the indexing by din is setup right
             assert "abcd" in wc
             assert "efgh" in wc
             assert wc["abcd"].din == "abcd"
@@ -433,3 +553,83 @@ async def test_energy_site_status_wall_connectors():
                 },
                 allow_redirects=True,
             )
+
+
+def test_energy_wall_connector_values():
+    """Test WallConnector with different values."""
+    json_wc = [
+        {
+            "din": "abcd",
+            "wall_connector_state": 1,
+            "wall_connector_fault_state": 2,
+            "wall_connector_power": 0,
+        },
+        {
+            "din": "efgh",
+            "wall_connector_state": 2,
+            "wall_connector_fault_state": 1,
+            "wall_connector_power": 100,
+        },
+        {
+            "din": "wc12345",
+            "wall_connector_state": 389,
+            "wall_connector_fault_state": 541,
+            "wall_connector_power": 73,
+        },
+    ]
+    din = ["abcd", "efgh", "wc12345"]
+    state = [1, 2, 389]
+    fault = [2, 1, 541]
+    power = [0, 100, 73]
+
+    for i, j in enumerate(json_wc):
+        wc = netzero.WallConnector(j)
+
+        assert wc.din == din[i]
+        assert wc.state == state[i]
+        assert wc.fault_state == fault[i]
+        assert wc.power == power[i]
+
+
+def test_energy_wall_connector_eq():
+    """Test WallConnector __eq__ operator."""
+    json_wc = [
+        {
+            "din": "abcd",
+            "wall_connector_state": 1,
+            "wall_connector_fault_state": 2,
+            "wall_connector_power": 0,
+        },
+        {
+            "din": "efgh",
+            "wall_connector_state": 2,
+            "wall_connector_fault_state": 1,
+            "wall_connector_power": 100,
+        },
+        {
+            "din": "wc12345",
+            "wall_connector_state": 389,
+            "wall_connector_fault_state": 541,
+            "wall_connector_power": 73,
+        },
+    ]
+
+    # Compare objects of the same type
+    for i1, j1 in enumerate(json_wc):
+        for i2, j2 in enumerate(json_wc):
+            wc1 = netzero.WallConnector(j1)
+            wc2 = netzero.WallConnector(j2)
+
+            if i1 != i2:
+                assert wc1 != wc2
+            else:
+                assert wc1 == wc2
+
+    for j in json_wc:
+        wc = netzero.WallConnector(j)
+        # Compare against None
+        assert wc is not None
+        assert wc != None  # noqa: E711
+
+        # Compare against another type
+        assert wc != "Bananas"
