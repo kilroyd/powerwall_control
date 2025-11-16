@@ -22,9 +22,15 @@ def auto_enable_custom_integrations(enable_custom_integrations):
     return
 
 
-DEFAULT_JSON = {
+DEFAULT_GET_CONFIG = {
     "backup_reserve_percent": 80,
     "operational_mode": "autonomous",
+    "energy_exports": "pv_only",
+    "grid_charging": False,
+}
+DEFAULT_SET_CONFIG = {
+    "backup_reserve_percent": 70,
+    "operational_mode": "self_consumption",
     "energy_exports": "pv_only",
     "grid_charging": False,
 }
@@ -34,7 +40,8 @@ DEFAULT_JSON = {
 async def mock_energysite_fixture(hass: HomeAssistant) -> AsyncMock:
     """This fixture provides a mock EnergySite, returning constant EnergySiteConfig."""
     mock_energysite = await _mock_energysite_get_config(
-        EnergySiteConfig(123456, DEFAULT_JSON)
+        EnergySiteConfig(123456, DEFAULT_GET_CONFIG),
+        EnergySiteConfig(123456, DEFAULT_SET_CONFIG),
     )
 
     entry = MockConfigEntry(

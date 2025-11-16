@@ -77,7 +77,7 @@ class PwCtrlCoordinator(DataUpdateCoordinator[netzero.EnergySiteConfig]):
             return
 
         # Pass the accumulated configuration changes to netzero
-        updated_config = await self.config.async_set_config(**self._reconfig_dict)
+        updated_config = await self.site.async_set_config(**self._reconfig_dict)
         self._reconfig_dict.clear()
 
         # Update listeners with any new values
