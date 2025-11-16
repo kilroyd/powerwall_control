@@ -1,6 +1,6 @@
 [project]
 name = "powerwall_control"
-version = "0.3.0"
+version = "0.4.0"
 description = "Home Assistant Powerwall Control Integration"
 readme = "README.md"
 requires-python = ">=3.13.2"
@@ -17,7 +17,7 @@ lint = [
 test = [
     "pytest",
     "pytest-cov",
-    "pytest-homeassistant-custom-component==0.13.289", # 2025.10.4
+    "pytest-homeassistant-custom-component",
     "aioresponses"
 ]
 dev=[
