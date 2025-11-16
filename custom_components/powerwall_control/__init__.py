@@ -38,9 +38,9 @@ CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
 # List of platforms to support.
 PLATFORMS = [Platform.NUMBER, Platform.SELECT, Platform.SWITCH]
 
-# Our ConfigEntry.runtime_data will hold PwCtrlData.
+# Our ConfigEntry.runtime_data will hold PwCtrlRuntimeData.
 # Otherwise access the config entries via the .data[] dictionary.
-type PwCtrlConfigEntry = ConfigEntry[PwCtrlData]
+type PwCtrlConfigEntry = ConfigEntry[PwCtrlRuntimeData]
 
 
 async def async_get_config(
@@ -77,7 +77,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: PwCtrlConfigEntry) -> bo
 
     coordinator = PwCtrlCoordinator(hass, site)
 
-    entry.runtime_data = PwCtrlData(hass, site, coordinator, device_info)
+    entry.runtime_data = PwCtrlRuntimeData(coordinator, device_info)
 
     # Creates a HA object for each platform required.
     # This calls `async_setup_entry` function in each platform module.
@@ -95,24 +95,14 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
 
-# Temp location. Move to appropriate file when we figure out what we
-# want PwCtrlData to do. For now store hass and site.
-class PwCtrlData:
-    """Central class to store runtime state.
-
-    This should eventually become a coordinator which talks to the
-    Netzero servers.
-    """
+class PwCtrlRuntimeData:
+    """Central class to store runtime state."""
 
     def __init__(
         self,
-        hass: HomeAssistant,
-        site: netzero.EnergySite,
         coordinator: PwCtrlCoordinator,
         device_info: DeviceInfo,
     ) -> None:
         """Store hass and site."""
-        self._hass = hass
-        self._site = site
         self.coordinator = coordinator
         self.device_info = device_info
