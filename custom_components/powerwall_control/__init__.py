@@ -28,8 +28,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.typing import ConfigType
 
 # Temporarily use netzero directly to test in place within HA
-import netzero
-
+from . import netzero
 from .const import DOMAIN
 from .coordinator import PwCtrlCoordinator
 

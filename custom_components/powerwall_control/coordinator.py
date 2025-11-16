@@ -5,8 +5,8 @@ from datetime import timedelta
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-import netzero
 
+from . import netzero
 from .const import DOMAIN, LOGGER
 
 # This integration is making configuration data available, which
