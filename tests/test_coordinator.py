@@ -4,6 +4,7 @@ This does not re-test the functionality inheritted from the
 DataUpdatecoordinator.
 """
 
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -13,6 +14,8 @@ from custom_components.powerwall_control import netzero
 from custom_components.powerwall_control.coordinator import PwCtrlCoordinator
 from homeassistant.core import HomeAssistant
 from homeassistant.util.dt import utcnow
+
+control_cooldown_interval = timedelta(seconds=15)
 
 
 def get_crd(
@@ -26,7 +29,7 @@ def get_crd(
 
 @pytest.fixture
 def crd(hass: HomeAssistant, mock_energysite: netzero.EnergySite) -> PwCtrlCoordinator:
-    """Coordinator mock with default update interval."""
+    """Fixture with coordinator mock."""
     return get_crd(hass)
 
 
@@ -38,8 +41,6 @@ async def test_async_request_control(
     assert crd.data is None
     await crd.async_refresh()
     assert crd.last_update_success is True
-
-    update_interval = crd.update_interval
 
     # Check initial values
     assert crd.data.backup_reserve_percent == 80
@@ -58,8 +59,8 @@ async def test_async_request_control(
     # Nothing should have changed yet
     assert len(updates) == 0
 
-    # Wait for the update interval
-    async_fire_time_changed(hass, utcnow() + update_interval)
+    # Wait for the control interval
+    async_fire_time_changed(hass, utcnow() + control_cooldown_interval)
     await hass.async_block_till_done()
 
     # Check we've had an update from the set_config call
@@ -104,8 +105,8 @@ async def test_shutdown(hass: HomeAssistant, crd: PwCtrlCoordinator) -> None:
     # Test we shutdown the debouncer and cleared the subscriptions
     assert len(mock_shutdown.mock_calls) == 1
 
-    # Wait for the update interval
-    async_fire_time_changed(hass, utcnow() + crd.update_interval)
+    # Wait for the control interval
+    async_fire_time_changed(hass, utcnow() + control_cooldown_interval)
     await hass.async_block_till_done()
 
     # No updates
