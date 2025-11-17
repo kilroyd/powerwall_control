@@ -1,9 +1,21 @@
 {
   "title": "Tesla Powerwall Control",
   "config": {
+    "abort": {
+        "already_configured": "Device is already configured",
+        "reconfigure_successful": "Reconfiguration was successful"
+    },
     "step": {
       "user": {
         "title": "Connect to Netzero",
+        "description": "Copy the API token and Energy System ID from the Developer API section of the Netzero App",
+        "data": {
+          "api_token": "API token",
+          "system_id": "Energy System ID"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Netzero",
         "description": "Copy the API token and Energy System ID from the Developer API section of the Netzero App",
         "data": {
           "api_token": "API token",
