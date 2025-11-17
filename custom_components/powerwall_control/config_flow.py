@@ -15,17 +15,10 @@ import voluptuous as vol
 
 from homeassistant import config_entries, exceptions
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.selector import TextSelector, TextSelectorConfig
 
 from . import async_get_config
 from .const import DOMAIN
-
-# Specify items in the order they are to be displayed in the UI
-DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required("api_token"): str,
-        vol.Required("system_id"): str,
-    }
-)
 
 # Regular expressions to validate user input
 API_TOKEN_RE = re.compile(r"[0-9A-z]{40,}$")
@@ -84,7 +77,52 @@ class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         # Either initial call or validation failed.
         # Show the form
         return self.async_show_form(
-            step_id="user", data_schema=DATA_SCHEMA, errors=errors
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required("api_token"): str,
+                    vol.Required("system_id"): str,
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_reconfigure(self, user_input: dict[str, Any] | None = None):
+        """Handle reconfiguration flow initiated by the user."""
+        errors = {}
+        if user_input is not None:
+            try:
+                _ = await validate_input(user_input, self.hass)
+
+                return self.async_update_reload_and_abort(
+                    self._get_reconfigure_entry(), data_updates=user_input
+                )
+            except InvalidToken:
+                errors["base"] = "invalid_token"
+            except InvalidSystemId:
+                errors["base"] = "invalid_system_id"
+            except CannotConnect:
+                errors["base"] = "cannot_connect"
+
+        # Get defaults from the existing entry. System ID is the unique ID,
+        # so don't allow that to change.
+        config_entry = self._get_reconfigure_entry()
+
+        # Either initial call or validation failed.
+        # Show the form
+        return self.async_show_form(
+            step_id="reconfigure",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        "api_token", default=config_entry.data["api_token"]
+                    ): str,
+                    vol.Optional(
+                        "system_id", default=config_entry.data["system_id"]
+                    ): TextSelector(TextSelectorConfig(read_only=True)),
+                }
+            ),
+            errors=errors,
         )
 
 
