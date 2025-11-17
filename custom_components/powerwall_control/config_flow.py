@@ -69,6 +69,10 @@ class PwCtrlConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 info = await validate_input(user_input, self.hass)
                 # Input validated, set the unique id and create the config entries
                 await self.async_set_unique_id(info["system_id"])
+
+                # Abort the flow if a config entry with the same unique ID exists
+                self._abort_if_unique_id_configured()
+
                 return self.async_create_entry(title=info["title"], data=user_input)
             except InvalidToken:
                 errors["base"] = "invalid_token"
