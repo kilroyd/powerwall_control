@@ -9,6 +9,6 @@
   "iot_class": "cloud_polling",
   "issue_tracker": "https://github.com/kilroyd/powerwall_control/issues",
   "requirements": [],
-  "single_config_entry": true,
+  "single_config_entry": false,
   "version": "0.4.0"
 }
