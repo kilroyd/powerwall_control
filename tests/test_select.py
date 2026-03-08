@@ -71,6 +71,25 @@ async def test_select_operational_mode(hass, mock_energysite):
         assert state.state == val[1]
 
 
+async def test_select_energy_export_mode_null(hass, mock_energysite):
+    """Test energy_export handles null from the API."""
+    state = hass.states.get("select.powerwall_energy_export_mode")
+    assert state
+    assert state.state == "pv_only"
+
+    base_config = mock_energysite.async_set_config.return_value
+    base_config.raw_data["energy_exports"] = None
+    mock_energysite.async_get_config.return_value = base_config
+
+    async_fire_time_changed(hass, utcnow() + control_cooldown_interval)
+    await hass.async_block_till_done()
+
+    # State should remain unchanged when API returns null
+    state = hass.states.get("select.powerwall_energy_export_mode")
+    assert state
+    assert state.state == "pv_only"
+
+
 async def test_select_energy_export_mode(hass, mock_energysite):
     """Test energy_export value selection."""
     test_values = [
