@@ -88,6 +88,8 @@ class PwCtrlExportModeSelectEntity(CoordinatorEntity, SelectEntity):
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from the coordinator."""
         mode = self.coordinator.data.energy_exports
+        if mode is None:
+            return
         if mode == EnergyExportMode.BATTERY_OK:
             self._attr_current_option = "battery_ok"
         elif mode == EnergyExportMode.PV_ONLY:

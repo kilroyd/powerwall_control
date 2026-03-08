@@ -161,6 +161,18 @@ def test_energy_site_config_values():
         assert config.grid_charging == charging[i]
 
 
+def test_energy_site_config_null_energy_exports():
+    """Test EnergySiteConfig handles null energy_exports."""
+    json_cfg = {
+        "backup_reserve_percent": 80,
+        "operational_mode": "autonomous",
+        "energy_exports": None,
+        "grid_charging": True,
+    }
+    config = netzero.EnergySiteConfig(12345, json_cfg)
+    assert config.energy_exports is None
+
+
 async def test_energy_site_set_config():
     """Test EnergySite async_set_config."""
     token = "abcdef"

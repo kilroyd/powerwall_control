@@ -243,12 +243,16 @@ class EnergySiteConfig:
         return OperationalMode(self.raw_data["operational_mode"])
 
     @property
-    def energy_exports(self) -> EnergyExportMode:
+    def energy_exports(self) -> EnergyExportMode | None:
         """The grid export mode of the site.
 
         This may be one of never, pv_only, or battery_ok.
+        The API may also return null.
         """
-        return EnergyExportMode(self.raw_data["energy_exports"])
+        value = self.raw_data["energy_exports"]
+        if value is None:
+            return None
+        return EnergyExportMode(value)
 
     @property
     def grid_charging(self) -> bool:
