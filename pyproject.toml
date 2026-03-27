@@ -1,6 +1,6 @@
 [project]
 name = "powerwall_control"
-version = "0.4.0"
+version = "0.4.1"
 description = "Home Assistant Powerwall Control Integration"
 readme = "README.md"
 requires-python = ">=3.13.2"
