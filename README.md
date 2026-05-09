@@ -79,7 +79,11 @@ With [HACS installed](https://www.hacs.xyz/docs/use/download/download/)
 * Search for "Tesla Powerwall Control", and select it.
 
 * Paste the API Token and System ID into the relevant text boxes and
-  press Submit.
+  press Submit. The API token should be 40 characters long, and is
+  composed of upper case letters, lower case letters and digits. If
+  copying manually be careful of similar looking characters (l vs 1, 0
+  vs O). If cut and pasting, watch out for extra symbols being
+  inserted.
 
 At this point you should see that a device has been added with 4 entities.
 
