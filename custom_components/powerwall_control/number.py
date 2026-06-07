@@ -51,6 +51,14 @@ class PwCtrlBackupReserveNumberEntity(CoordinatorEntity, NumberEntity):
     async def async_set_native_value(self, value: float) -> None:
         """Set new value."""
         value = int(value)
+        if value >= 80 and value < 100:
+            # Tesla allow a backup reserve of 100% (to reserve the
+            # full battery for backup). However they don't allow
+            # backup values of 81% to 99% (inclusive). These values
+            # are treated as 80% by Tesla.
+            #
+            # Reflect this in HomeAssistant.
+            value = 80
         await self.coordinator.async_request_control(backup_reserve_percent=value)
         # When set the coordinator will call _handle_coordinator_update
 
